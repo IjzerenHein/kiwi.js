@@ -1,4 +1,3 @@
-/// <reference path="../thirdparty/tsu.d.ts" />
 declare module kiwi {
     /**
      * An enum defining the linear constraint operators.
@@ -52,21 +51,12 @@ declare module kiwi {
     }
 }
 declare module kiwi {
-    interface IMap<T, U> extends tsu.AssociativeArray<T, U> {
-    }
-    function createMap<T, U>(compare: tsu.ICompare<T, T>): IMap<T, U>;
-}
-declare module kiwi {
     /**
      * The primary user constraint variable.
      *
      * @class
      */
     class Variable {
-        /**
-         * A static variable comparison function.
-         */
-        static Compare(a: Variable, b: Variable): number;
         /**
          * Construct a new Variable
          *
@@ -135,7 +125,7 @@ declare module kiwi {
          *
          * This *must* be treated as const.
          */
-        terms(): IMap<Variable, number>;
+        terms(): Map<Variable, number>;
         /**
          * Returns the constant of the expression.
          */

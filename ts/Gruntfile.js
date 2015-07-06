@@ -79,7 +79,8 @@ module.exports = function(grunt) {
   // Tasks
   grunt.registerTask('lint', ['tslint']);
   //grunt.registerTask('doc', ['jsdoc2md']);
-  grunt.registerTask('build', ['exec:build', 'concat', 'umd']);
+  //grunt.registerTask('build', ['exec:build', 'concat', 'umd']);
+  grunt.registerTask('build', ['exec:build', 'umd']);
   grunt.registerTask('test', ['build', 'exec:test']);
   grunt.registerTask('bench', ['build', 'exec:bench']);
   grunt.registerTask('minify', ['uglify', 'usebanner']);

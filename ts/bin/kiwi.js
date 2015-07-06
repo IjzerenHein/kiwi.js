@@ -21,1037 +21,6 @@
 |
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
-var tsu;
-(function (tsu) {
-    
-
-    
-
-    
-
-    /**
-    * An iterator for an array of items.
-    */
-    var ArrayIterator = (function () {
-        /*
-        * Construct a new ArrayIterator.
-        *
-        * @param array The array of items to iterate.
-        * @param [index] The index at which to start iteration.
-        */
-        function ArrayIterator(array, index) {
-            if (typeof index === "undefined") { index = 0; }
-            this._array = array;
-            this._index = Math.max(0, Math.min(index, array.length));
-        }
-        /**
-        * Returns the next item from the iterator or undefined.
-        */
-        ArrayIterator.prototype.__next__ = function () {
-            return this._array[this._index++];
-        };
-
-        /**
-        * Returns this same iterator.
-        */
-        ArrayIterator.prototype.__iter__ = function () {
-            return this;
-        };
-        return ArrayIterator;
-    })();
-    tsu.ArrayIterator = ArrayIterator;
-
-    /**
-    * A reverse iterator for an array of items.
-    */
-    var ReverseArrayIterator = (function () {
-        /**
-        * Construct a new ReverseArrayIterator.
-        *
-        * @param array The array of items to iterate.
-        * @param [index] The index at which to start iteration.
-        */
-        function ReverseArrayIterator(array, index) {
-            if (typeof index === "undefined") { index = array.length; }
-            this._array = array;
-            this._index = Math.max(0, Math.min(index, array.length));
-        }
-        /**
-        * Returns the next item from the iterator or undefined.
-        */
-        ReverseArrayIterator.prototype.__next__ = function () {
-            return this._array[--this._index];
-        };
-
-        /**
-        * Returns this same iterator.
-        */
-        ReverseArrayIterator.prototype.__iter__ = function () {
-            return this;
-        };
-        return ReverseArrayIterator;
-    })();
-    tsu.ReverseArrayIterator = ReverseArrayIterator;
-
-    
-
-    function iter(object) {
-        if (object instanceof Array) {
-            return new ArrayIterator(object);
-        }
-        return object.__iter__();
-    }
-    tsu.iter = iter;
-
-    
-
-    function reversed(object) {
-        if (object instanceof Array) {
-            return new ReverseArrayIterator(object);
-        }
-        return object.__reversed__();
-    }
-    tsu.reversed = reversed;
-
-    /**
-    * Returns the next value from an iterator, or undefined.
-    */
-    function next(iterator) {
-        return iterator.__next__();
-    }
-    tsu.next = next;
-
-    
-
-    function asArray(object) {
-        if (object instanceof Array) {
-            return object.slice();
-        }
-        var value;
-        var array = [];
-        var it = object.__iter__();
-        while ((value = it.__next__()) !== undefined) {
-            array.push(value);
-        }
-        return array;
-    }
-    tsu.asArray = asArray;
-
-    
-
-    function forEach(object, callback) {
-        if (object instanceof Array) {
-            for (var i = 0, n = object.length; i < n; ++i) {
-                if (callback(object[i]) === false) {
-                    return;
-                }
-            }
-        } else {
-            var value;
-            var it = object.__iter__();
-            while ((value = it.__next__()) !== undefined) {
-                if (callback(value) === false) {
-                    return;
-                }
-            }
-        }
-    }
-    tsu.forEach = forEach;
-
-    
-
-    function map(object, callback) {
-        var result = [];
-        if (object instanceof Array) {
-            for (var i = 0, n = object.length; i < n; ++i) {
-                result.push(callback(object[i]));
-            }
-        } else {
-            var value;
-            var it = object.__iter__();
-            while ((value = it.__next__()) !== undefined) {
-                result.push(callback(value));
-            }
-        }
-        return result;
-    }
-    tsu.map = map;
-
-    
-
-    function filter(object, callback) {
-        var value;
-        var result = [];
-        if (object instanceof Array) {
-            for (var i = 0, n = object.length; i < n; ++i) {
-                value = object[i];
-                if (callback(value)) {
-                    result.push(value);
-                }
-            }
-        } else {
-            var it = object.__iter__();
-            while ((value = it.__next__()) !== undefined) {
-                if (callback(value)) {
-                    result.push(value);
-                }
-            }
-        }
-        return result;
-    }
-    tsu.filter = filter;
-})(tsu || (tsu = {}));
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
-|
-| Distributed under the terms of the Modified BSD License.
-|
-| The full license is in the file COPYING.txt, distributed with this software.
-|----------------------------------------------------------------------------*/
-var tsu;
-(function (tsu) {
-    
-
-    /**
-    * A class which defines a generic pair object.
-    */
-    var Pair = (function () {
-        /**
-        * Construct a new Pair object.
-        *
-        * @param first The first item of the pair.
-        * @param second The second item of the pair.
-        */
-        function Pair(first, second) {
-            this.first = first;
-            this.second = second;
-        }
-        /**
-        * Create a copy of the pair.
-        */
-        Pair.prototype.copy = function () {
-            return new Pair(this.first, this.second);
-        };
-        return Pair;
-    })();
-    tsu.Pair = Pair;
-})(tsu || (tsu = {}));
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
-|
-| Distributed under the terms of the Modified BSD License.
-|
-| The full license is in the file COPYING.txt, distributed with this software.
-|----------------------------------------------------------------------------*/
-/// <reference path="iterator.ts"/>
-/// <reference path="utility.ts"/>
-var tsu;
-(function (tsu) {
-    /**
-    * Perform a lower bound search on a sorted array.
-    *
-    * @param array The array of sorted items to search.
-    * @param value The value to located in the array.
-    * @param compare The value comparison function.
-    * @returns The index of the first element in the array which
-    *          compares greater than or equal to the given value.
-    */
-    function lowerBound(array, value, compare) {
-        var begin = 0;
-        var n = array.length;
-        var half;
-        var middle;
-        while (n > 0) {
-            half = n >> 1;
-            middle = begin + half;
-            if (compare(array[middle], value) < 0) {
-                begin = middle + 1;
-                n -= half + 1;
-            } else {
-                n = half;
-            }
-        }
-        return begin;
-    }
-    tsu.lowerBound = lowerBound;
-
-    /**
-    * Perform a binary search on a sorted array.
-    *
-    * @param array The array of sorted items to search.
-    * @param value The value to located in the array.
-    * @param compare The value comparison function.
-    * @returns The index of the found item, or -1.
-    */
-    function binarySearch(array, value, compare) {
-        var index = lowerBound(array, value, compare);
-        if (index === array.length) {
-            return -1;
-        }
-        var item = array[index];
-        if (compare(item, value) !== 0) {
-            return -1;
-        }
-        return index;
-    }
-    tsu.binarySearch = binarySearch;
-
-    /**
-    * Perform a binary find on a sorted array.
-    *
-    * @param array The array of sorted items to search.
-    * @param value The value to located in the array.
-    * @param compare The value comparison function.
-    * @returns The found item in the array, or undefined.
-    */
-    function binaryFind(array, value, compare) {
-        var index = lowerBound(array, value, compare);
-        if (index === array.length) {
-            return undefined;
-        }
-        var item = array[index];
-        if (compare(item, value) !== 0) {
-            return undefined;
-        }
-        return item;
-    }
-    tsu.binaryFind = binaryFind;
-
-    
-
-    function asSet(items, compare) {
-        var array = tsu.asArray(items);
-        var n = array.length;
-        if (n <= 1) {
-            return array;
-        }
-        array.sort(compare);
-        var result = [array[0]];
-        for (var i = 1, j = 0; i < n; ++i) {
-            var item = array[i];
-            if (compare(result[j], item) !== 0) {
-                result.push(item);
-                ++j;
-            }
-        }
-        return result;
-    }
-    tsu.asSet = asSet;
-
-    /**
-    * Test whether a two sorted arrays sets are disjoint.
-    *
-    * @param first The first sorted array set.
-    * @param second The second sorted array set.
-    * @param compare The value comparison function.
-    * @returns true if the sets are disjoint, false otherwise.
-    */
-    function setIsDisjoint(first, second, compare) {
-        var i = 0, j = 0;
-        var len1 = first.length;
-        var len2 = second.length;
-        while (i < len1 && j < len2) {
-            var v = compare(first[i], second[j]);
-            if (v < 0) {
-                ++i;
-            } else if (v > 0) {
-                ++j;
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-    tsu.setIsDisjoint = setIsDisjoint;
-
-    /**
-    * Test whether one sorted array set is the subset of another.
-    *
-    * @param first The potential subset.
-    * @param second The potential superset.
-    * @param compare The value comparison function.
-    * @returns true if the first set is a subset of the second.
-    */
-    function setIsSubset(first, second, compare) {
-        var len1 = first.length;
-        var len2 = second.length;
-        if (len1 > len2) {
-            return false;
-        }
-        var i = 0, j = 0;
-        while (i < len1 && j < len2) {
-            var v = compare(first[i], second[j]);
-            if (v < 0) {
-                return false;
-            } else if (v > 0) {
-                ++j;
-            } else {
-                ++i;
-                ++j;
-            }
-        }
-        if (i < len1) {
-            return false;
-        }
-        return true;
-    }
-    tsu.setIsSubset = setIsSubset;
-
-    /**
-    * Create the set union of two sorted set arrays.
-    var j = 0;
-    *
-    * @param first The first sorted array set.
-    * @param second The second sorted array set.
-    * @param compare The value comparison function.
-    * @returns The set union of the two arrays.
-    */
-    function setUnion(first, second, compare) {
-        var i = 0, j = 0;
-        var len1 = first.length;
-        var len2 = second.length;
-        var merged = [];
-        while (i < len1 && j < len2) {
-            var a = first[i];
-            var b = second[j];
-            var v = compare(a, b);
-            if (v < 0) {
-                merged.push(a);
-                ++i;
-            } else if (v > 0) {
-                merged.push(b);
-                ++j;
-            } else {
-                merged.push(a);
-                ++i;
-                ++j;
-            }
-        }
-        while (i < len1) {
-            merged.push(first[i]);
-            ++i;
-        }
-        while (j < len2) {
-            merged.push(second[j]);
-            ++j;
-        }
-        return merged;
-    }
-    tsu.setUnion = setUnion;
-
-    /**
-    * Create a set intersection of two sorted set arrays.
-    *
-    * @param first The first sorted array set.
-    * @param second The second sorted array set.
-    * @param compare The value comparison function.
-    * @returns The set intersection of the two arrays.
-    */
-    function setIntersection(first, second, compare) {
-        var i = 0, j = 0;
-        var len1 = first.length;
-        var len2 = second.length;
-        var merged = [];
-        while (i < len1 && j < len2) {
-            var a = first[i];
-            var b = second[j];
-            var v = compare(a, b);
-            if (v < 0) {
-                ++i;
-            } else if (v > 0) {
-                ++j;
-            } else {
-                merged.push(a);
-                ++i;
-                ++j;
-            }
-        }
-        return merged;
-    }
-    tsu.setIntersection = setIntersection;
-
-    /**
-    * Create a set difference of two sorted set arrays.
-    *
-    * @param first The first sorted array set.
-    * @param second The second sorted array set.
-    * @param compare The value comparison function.
-    * @returns The set difference of the two arrays.
-    */
-    function setDifference(first, second, compare) {
-        var i = 0, j = 0;
-        var len1 = first.length;
-        var len2 = second.length;
-        var merged = [];
-        while (i < len1 && j < len2) {
-            var a = first[i];
-            var b = second[j];
-            var v = compare(a, b);
-            if (v < 0) {
-                merged.push(a);
-                ++i;
-            } else if (v > 0) {
-                ++j;
-            } else {
-                ++i;
-                ++j;
-            }
-        }
-        while (i < len1) {
-            merged.push(first[i]);
-            ++i;
-        }
-        return merged;
-    }
-    tsu.setDifference = setDifference;
-
-    /**
-    * Create a set symmetric difference of two sorted set arrays.
-    *
-    * @param first The first sorted array set.
-    * @param second The second sorted array set.
-    * @param compare The value comparison function.
-    * @returns The set symmetric difference of the two arrays.
-    */
-    function setSymmetricDifference(first, second, compare) {
-        var i = 0, j = 0;
-        var len1 = first.length;
-        var len2 = second.length;
-        var merged = [];
-        while (i < len1 && j < len2) {
-            var a = first[i];
-            var b = second[j];
-            var v = compare(a, b);
-            if (v < 0) {
-                merged.push(a);
-                ++i;
-            } else if (v > 0) {
-                merged.push(b);
-                ++j;
-            } else {
-                ++i;
-                ++j;
-            }
-        }
-        while (i < len1) {
-            merged.push(first[i]);
-            ++i;
-        }
-        while (j < len2) {
-            merged.push(second[j]);
-            ++j;
-        }
-        return merged;
-    }
-    tsu.setSymmetricDifference = setSymmetricDifference;
-})(tsu || (tsu = {}));
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
-|
-| Distributed under the terms of the Modified BSD License.
-|
-| The full license is in the file COPYING.txt, distributed with this software.
-|----------------------------------------------------------------------------*/
-/// <reference path="iterator.ts"/>
-var tsu;
-(function (tsu) {
-    /**
-    * A base class for implementing array-based data structures.
-    *
-    * @class
-    */
-    var ArrayBase = (function () {
-        function ArrayBase() {
-            /*
-            * The internal data array.
-            *
-            * @protected
-            */
-            this._array = [];
-        }
-        /**
-        * Returns the number of items in the array.
-        */
-        ArrayBase.prototype.size = function () {
-            return this._array.length;
-        };
-
-        /**
-        * Returns true if the array is empty.
-        */
-        ArrayBase.prototype.empty = function () {
-            return this._array.length === 0;
-        };
-
-        /**
-        * Returns the item at the given array index.
-        *
-        * @param index The integer index of the desired item.
-        */
-        ArrayBase.prototype.itemAt = function (index) {
-            return this._array[index];
-        };
-
-        /**
-        * Removes and returns the item at the given index.
-        *
-        * @param index The integer index of the desired item.
-        */
-        ArrayBase.prototype.takeAt = function (index) {
-            return this._array.splice(index, 1)[0];
-        };
-
-        /**
-        * Clear the internal contents of array.
-        */
-        ArrayBase.prototype.clear = function () {
-            this._array = [];
-        };
-
-        /**
-        * Swap this array's contents with another array.
-        *
-        * @param other The array base to use for the swap.
-        */
-        ArrayBase.prototype.swap = function (other) {
-            var array = this._array;
-            this._array = other._array;
-            other._array = array;
-        };
-
-        /**
-        * Returns an iterator over the array of items.
-        */
-        ArrayBase.prototype.__iter__ = function () {
-            return tsu.iter(this._array);
-        };
-
-        /**
-        * Returns a reverse iterator over the array of items.
-        */
-        ArrayBase.prototype.__reversed__ = function () {
-            return tsu.reversed(this._array);
-        };
-        return ArrayBase;
-    })();
-    tsu.ArrayBase = ArrayBase;
-})(tsu || (tsu = {}));
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
-|
-| Distributed under the terms of the Modified BSD License.
-|
-| The full license is in the file COPYING.txt, distributed with this software.
-|----------------------------------------------------------------------------*/
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-/// <reference path="algorithm.ts"/>
-/// <reference path="array_base.ts"/>
-/// <reference path="iterator.ts"/>
-/// <reference path="utility.ts"/>
-var tsu;
-(function (tsu) {
-    /**
-    * A mapping container build on a sorted array.
-    *
-    * @class
-    */
-    var AssociativeArray = (function (_super) {
-        __extends(AssociativeArray, _super);
-        /**
-        * Construct a new AssociativeArray.
-        *
-        * @param compare The key comparison function.
-        */
-        function AssociativeArray(compare) {
-            _super.call(this);
-            this._compare = compare;
-            this._wrapped = wrapCompare(compare);
-        }
-        /**
-        * Returns the key comparison function used by this array.
-        */
-        AssociativeArray.prototype.comparitor = function () {
-            return this._compare;
-        };
-
-        /**
-        * Return the array index of the given key, or -1.
-        *
-        * @param key The key to locate in the array.
-        */
-        AssociativeArray.prototype.indexOf = function (key) {
-            return tsu.binarySearch(this._array, key, this._wrapped);
-        };
-
-        /**
-        * Returns true if the key is in the array, false otherwise.
-        *
-        * @param key The key to locate in the array.
-        */
-        AssociativeArray.prototype.contains = function (key) {
-            return tsu.binarySearch(this._array, key, this._wrapped) >= 0;
-        };
-
-        /**
-        * Returns the pair associated with the given key, or undefined.
-        *
-        * @param key The key to locate in the array.
-        */
-        AssociativeArray.prototype.find = function (key) {
-            return tsu.binaryFind(this._array, key, this._wrapped);
-        };
-
-        /**
-        * Returns the pair associated with the key if it exists.
-        *
-        * If the key does not exist, a new pair will be created and
-        * inserted using the value created by the given factory.
-        *
-        * @param key The key to locate in the array.
-        * @param factory The function which creates the default value.
-        */
-        AssociativeArray.prototype.setDefault = function (key, factory) {
-            var array = this._array;
-            var index = tsu.lowerBound(array, key, this._wrapped);
-            if (index === array.length) {
-                var pair = new tsu.Pair(key, factory());
-                array.push(pair);
-                return pair;
-            }
-            var currPair = array[index];
-            if (this._compare(currPair.first, key) !== 0) {
-                var pair = new tsu.Pair(key, factory());
-                array.splice(index, 0, pair);
-                return pair;
-            }
-            return currPair;
-        };
-
-        /**
-        * Insert the pair into the array and return the pair.
-        *
-        * This will overwrite any existing entry in the array.
-        *
-        * @param key The key portion of the pair.
-        * @param value The value portion of the pair.
-        */
-        AssociativeArray.prototype.insert = function (key, value) {
-            var array = this._array;
-            var index = tsu.lowerBound(array, key, this._wrapped);
-            if (index === array.length) {
-                var pair = new tsu.Pair(key, value);
-                array.push(pair);
-                return pair;
-            }
-            var currPair = array[index];
-            if (this._compare(currPair.first, key) !== 0) {
-                var pair = new tsu.Pair(key, value);
-                array.splice(index, 0, pair);
-                return pair;
-            }
-            currPair.second = value;
-            return currPair;
-        };
-
-        AssociativeArray.prototype.update = function (object) {
-            var _this = this;
-            if (object instanceof AssociativeArray) {
-                var obj = object;
-                this._array = merge(this._array, obj._array, this._compare);
-            } else {
-                tsu.forEach(object, function (pair) {
-                    _this.insert(pair.first, pair.second);
-                });
-            }
-        };
-
-        /**
-        * Removes and returns the pair for the given key, or undefined.
-        *
-        * @param key The key to remove from the map.
-        */
-        AssociativeArray.prototype.erase = function (key) {
-            var array = this._array;
-            var index = tsu.binarySearch(array, key, this._wrapped);
-            if (index < 0) {
-                return undefined;
-            }
-            return array.splice(index, 1)[0];
-        };
-
-        /**
-        * Create a copy of this associative array.
-        */
-        AssociativeArray.prototype.copy = function () {
-            var theCopy = new AssociativeArray(this._compare);
-            var copyArray = theCopy._array;
-            var thisArray = this._array;
-            for (var i = 0, n = thisArray.length; i < n; ++i) {
-                copyArray.push(thisArray[i].copy());
-            }
-            return theCopy;
-        };
-        return AssociativeArray;
-    })(tsu.ArrayBase);
-    tsu.AssociativeArray = AssociativeArray;
-
-    /**
-    * An internal which wraps a comparison key function.
-    */
-    function wrapCompare(cmp) {
-        return function (pair, value) {
-            return cmp(pair.first, value);
-        };
-    }
-
-    /**
-    * An internal function which merges two ordered pair arrays.
-    */
-    function merge(first, second, compare) {
-        var i = 0, j = 0;
-        var len1 = first.length;
-        var len2 = second.length;
-        var merged = [];
-        while (i < len1 && j < len2) {
-            var a = first[i];
-            var b = second[j];
-            var v = compare(a.first, b.first);
-            if (v < 0) {
-                merged.push(a.copy());
-                ++i;
-            } else if (v > 0) {
-                merged.push(b.copy());
-                ++j;
-            } else {
-                merged.push(b.copy());
-                ++i;
-                ++j;
-            }
-        }
-        while (i < len1) {
-            merged.push(first[i].copy());
-            ++i;
-        }
-        while (j < len2) {
-            merged.push(second[j].copy());
-            ++j;
-        }
-        return merged;
-    }
-})(tsu || (tsu = {}));
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
-|
-| Distributed under the terms of the Modified BSD License.
-|
-| The full license is in the file COPYING.txt, distributed with this software.
-|----------------------------------------------------------------------------*/
-/// <reference path="algorithm.ts"/>
-/// <reference path="array_base.ts"/>
-/// <reference path="iterator.ts"/>
-/// <reference path="utility.ts"/>
-var tsu;
-(function (tsu) {
-    /**
-    * A set container built on a sorted array.
-    *
-    * @class
-    */
-    var UniqueArray = (function (_super) {
-        __extends(UniqueArray, _super);
-        /**
-        * Construct a new UniqueArray.
-        *
-        * @param compare The item comparison function.
-        */
-        function UniqueArray(compare) {
-            _super.call(this);
-            this._compare = compare;
-        }
-        /**
-        * Returns the comparison function for this array.
-        */
-        UniqueArray.prototype.comparitor = function () {
-            return this._compare;
-        };
-
-        /**
-        * Return the array index of the given item, or -1.
-        *
-        * @param item The item to locate in the array.
-        */
-        UniqueArray.prototype.indexOf = function (item) {
-            return tsu.binarySearch(this._array, item, this._compare);
-        };
-
-        /**
-        * Returns true if the item is in the array, false otherwise.
-        *
-        * @param item The item to locate in the array.
-        */
-        UniqueArray.prototype.contains = function (item) {
-            return tsu.binarySearch(this._array, item, this._compare) >= 0;
-        };
-
-        /**
-        * Insert an item into the array.
-        *
-        * Returns true if the item is new to the set, false otherwise.
-        *
-        * @param item The item to insert into the array.
-        */
-        UniqueArray.prototype.insert = function (item) {
-            var array = this._array;
-            var index = tsu.lowerBound(array, item, this._compare);
-            if (index === array.length) {
-                array.push(item);
-                return true;
-            }
-            if (this._compare(array[index], item) !== 0) {
-                array.splice(index, 0, item);
-                return true;
-            }
-            return false;
-        };
-
-        /**
-        * Remove an item from the array.
-        *
-        * Returns true if the item was removed, false otherwise.
-        *
-        * @param item The item to remove from the array.
-        */
-        UniqueArray.prototype.erase = function (item) {
-            var array = this._array;
-            var index = tsu.binarySearch(array, item, this._compare);
-            if (index < 0) {
-                return false;
-            }
-            array.splice(index, 1);
-            return true;
-        };
-
-        /**
-        * Create a copy of this unique array.
-        */
-        UniqueArray.prototype.copy = function () {
-            var theCopy = new UniqueArray(this._compare);
-            theCopy._array = this._array.slice();
-            return theCopy;
-        };
-
-        UniqueArray.prototype.isDisjoint = function (object) {
-            var cmp = this._compare;
-            var other = toSet(object, cmp);
-            return tsu.setIsDisjoint(this._array, other, cmp);
-        };
-
-        UniqueArray.prototype.isSubset = function (object) {
-            var cmp = this._compare;
-            var other = toSet(object, cmp);
-            return tsu.setIsSubset(this._array, other, cmp);
-        };
-
-        UniqueArray.prototype.isSuperset = function (object) {
-            var cmp = this._compare;
-            var other = toSet(object, cmp);
-            return tsu.setIsSubset(other, this._array, cmp);
-        };
-
-        UniqueArray.prototype.union = function (object) {
-            var cmp = this._compare;
-            var res = new UniqueArray(cmp);
-            var other = toSet(object, cmp);
-            res._array = tsu.setUnion(this._array, other, cmp);
-            return res;
-        };
-
-        UniqueArray.prototype.intersection = function (object) {
-            var cmp = this._compare;
-            var res = new UniqueArray(cmp);
-            var other = toSet(object, cmp);
-            res._array = tsu.setIntersection(this._array, other, cmp);
-            return res;
-        };
-
-        UniqueArray.prototype.difference = function (object) {
-            var cmp = this._compare;
-            var res = new UniqueArray(cmp);
-            var other = toSet(object, cmp);
-            res._array = tsu.setDifference(this._array, other, cmp);
-            return res;
-        };
-
-        UniqueArray.prototype.symmetricDifference = function (object) {
-            var cmp = this._compare;
-            var res = new UniqueArray(cmp);
-            var other = toSet(object, cmp);
-            res._array = tsu.setSymmetricDifference(this._array, other, cmp);
-            return res;
-        };
-
-        UniqueArray.prototype.unionUpdate = function (object) {
-            var cmp = this._compare;
-            var other = toSet(object, cmp);
-            this._array = tsu.setUnion(this._array, other, cmp);
-        };
-
-        UniqueArray.prototype.intersectionUpdate = function (object) {
-            var cmp = this._compare;
-            var other = toSet(object, cmp);
-            this._array = tsu.setIntersection(this._array, other, cmp);
-        };
-
-        UniqueArray.prototype.differenceUpdate = function (object) {
-            var cmp = this._compare;
-            var other = toSet(object, cmp);
-            this._array = tsu.setDifference(this._array, other, cmp);
-        };
-
-        UniqueArray.prototype.symmetricDifferenceUpdate = function (object) {
-            var cmp = this._compare;
-            var other = toSet(object, cmp);
-            this._array = tsu.setSymmetricDifference(this._array, other, cmp);
-        };
-        return UniqueArray;
-    })(tsu.ArrayBase);
-    tsu.UniqueArray = UniqueArray;
-
-    
-
-    function toSet(arg, cmp) {
-        if (arg instanceof UniqueArray) {
-            return arg._array;
-        }
-        return tsu.asSet(arg, cmp);
-    }
-})(tsu || (tsu = {}));
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
-|
-| Distributed under the terms of the Modified BSD License.
-|
-| The full license is in the file COPYING.txt, distributed with this software.
-|----------------------------------------------------------------------------*/
-/// <reference path="algorithm.ts"/>
-/// <reference path="array_base.ts"/>
-/// <reference path="associative_array.ts"/>
-/// <reference path="iterator.ts"/>
-/// <reference path="unique_array.ts"/>
-/// <reference path="utility.ts"/>
-
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
-|
-| Distributed under the terms of the Modified BSD License.
-|
-| The full license is in the file COPYING.txt, distributed with this software.
-|----------------------------------------------------------------------------*/
 // <reference path="expression.ts">
 // <reference path="strength.ts">
 var kiwi;
@@ -1133,21 +102,6 @@ var kiwi;
 |
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
-/// <reference path="../thirdparty/tsu.d.ts"/>
-var kiwi;
-(function (kiwi) {
-    function createMap(compare) {
-        return new tsu.AssociativeArray(compare);
-    }
-    kiwi.createMap = createMap;
-})(kiwi || (kiwi = {}));
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
-|
-| Distributed under the terms of the Modified BSD License.
-|
-| The full license is in the file COPYING.txt, distributed with this software.
-|----------------------------------------------------------------------------*/
 var kiwi;
 (function (kiwi) {
     /**
@@ -1168,12 +122,6 @@ var kiwi;
             this._id = VarId++;
             this._name = name;
         }
-        /**
-         * A static variable comparison function.
-         */
-        Variable.Compare = function (a, b) {
-            return a.id() - b.id();
-        };
         /**
          * Returns the unique id number of the variable.
          */
@@ -1240,8 +188,6 @@ var kiwi;
 |
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
-/// <reference path="../thirdparty/tsu.d.ts"/>
-/// <reference path="maptype.ts"/>
 /// <reference path="variable.ts"/>
 var kiwi;
 (function (kiwi) {
@@ -1275,8 +221,8 @@ var kiwi;
          */
         Expression.prototype.value = function () {
             var result = this._constant;
-            tsu.forEach(this._terms, function (pair) {
-                result += pair.first.value() * pair.second;
+            this._terms.forEach(function (coefficient, variable) {
+                result += variable.value() * coefficient;
             });
             return result;
         };
@@ -1288,15 +234,14 @@ var kiwi;
      */
     function parseArgs(args) {
         var constant = 0.0;
-        var factory = function () { return 0.0; };
-        var terms = kiwi.createMap(kiwi.Variable.Compare);
+        var terms = new Map();
         for (var i = 0, n = args.length; i < n; ++i) {
             var item = args[i];
             if (typeof item === "number") {
                 constant += item;
             }
             else if (item instanceof kiwi.Variable) {
-                terms.setDefault(item, factory).second += 1.0;
+                terms.set(item, 1.0);
             }
             else if (item instanceof Array) {
                 if (item.length !== 2) {
@@ -1310,7 +255,7 @@ var kiwi;
                 if (!(variable instanceof kiwi.Variable)) {
                     throw new Error("array item 1 must be a variable");
                 }
-                terms.setDefault(variable, factory).second += value;
+                terms.set(variable, value);
             }
             else {
                 throw new Error("invalid Expression argument: " + item);
@@ -1374,10 +319,8 @@ var kiwi;
 |
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
-/// <reference path="../thirdparty/tsu.d.ts"/>
 /// <reference path="constraint.ts"/>
 /// <reference path="expression.ts"/>
-/// <reference path="maptype.ts"/>
 /// <reference path="strength.ts"/>
 /// <reference path="variable.ts"/>
 var kiwi;
@@ -1392,10 +335,10 @@ var kiwi;
          * Construct a new Solver.
          */
         function Solver() {
-            this._cnMap = createCnMap();
-            this._rowMap = createRowMap();
-            this._varMap = createVarMap();
-            this._editMap = createEditMap();
+            this._cnMap = new Map();
+            this._rowMap = new Map();
+            this._varMap = new Map();
+            this._editMap = new Map();
             this._infeasibleRows = [];
             this._objective = new Row();
             this._artificial = null;
@@ -1405,8 +348,7 @@ var kiwi;
          * Add a constraint to the solver.
          */
         Solver.prototype.addConstraint = function (constraint) {
-            var cnPair = this._cnMap.find(constraint);
-            if (cnPair !== undefined) {
+            if (this._cnMap.has(constraint)) {
                 throw new Error("duplicate constraint");
             }
             // Creating a row causes symbols to be reserved for the variables
@@ -1444,9 +386,9 @@ var kiwi;
             else {
                 row.solveFor(subject);
                 this._substitute(subject, row);
-                this._rowMap.insert(subject, row);
+                this._rowMap.set(subject, row);
             }
-            this._cnMap.insert(constraint, tag);
+            this._cnMap.set(constraint, tag);
             // Optimizing after each constraint is added performs less
             // aggregate work due to a smaller average system size. It
             // also ensures the solver remains in a consistent state.
@@ -1456,26 +398,27 @@ var kiwi;
          * Remove a constraint from the solver.
          */
         Solver.prototype.removeConstraint = function (constraint) {
-            var cnPair = this._cnMap.erase(constraint);
-            if (cnPair === undefined) {
+            var tag = this._cnMap.get(constraint);
+            if (!tag) {
                 throw new Error("unknown constraint");
             }
+            this._cnMap.delete(constraint);
             // Remove the error effects from the objective function
             // *before* pivoting, or substitutions into the objective
             // will lead to incorrect solver results.
-            this._removeConstraintEffects(constraint, cnPair.second);
+            this._removeConstraintEffects(constraint, tag);
             // If the marker is basic, simply drop the row. Otherwise,
             // pivot the marker into the basis and then drop the row.
-            var marker = cnPair.second.marker;
-            var rowPair = this._rowMap.erase(marker);
-            if (rowPair === undefined) {
+            var marker = tag.marker;
+            if (!this._rowMap.delete(marker)) {
                 var leaving = this._getMarkerLeavingSymbol(marker);
                 if (leaving.type() === 0 /* Invalid */) {
                     throw new Error("failed to find leaving row");
                 }
-                rowPair = this._rowMap.erase(leaving);
-                rowPair.second.solveForEx(leaving, marker);
-                this._substitute(marker, rowPair.second);
+                var row = this._rowMap.get(leaving);
+                this._rowMap.delete(leaving);
+                row.solveForEx(leaving, marker);
+                this._substitute(marker, row);
             }
             // Optimizing after each constraint is removed ensures that the
             // solver remains consistent. It makes the solver api easier to
@@ -1486,14 +429,13 @@ var kiwi;
          * Test whether the solver contains the constraint.
          */
         Solver.prototype.hasConstraint = function (constraint) {
-            return this._cnMap.contains(constraint);
+            return this._cnMap.has(constraint);
         };
         /**
          * Add an edit variable to the solver.
          */
         Solver.prototype.addEditVariable = function (variable, strength) {
-            var editPair = this._editMap.find(variable);
-            if (editPair !== undefined) {
+            if (this._editMap.has(variable)) {
                 throw new Error("duplicate edit variable");
             }
             strength = kiwi.Strength.clip(strength);
@@ -1503,43 +445,44 @@ var kiwi;
             var expr = new kiwi.Expression(variable);
             var cn = new kiwi.Constraint(expr, 2 /* Eq */, strength);
             this.addConstraint(cn);
-            var tag = this._cnMap.find(cn).second;
+            var tag = this._cnMap.get(cn);
             var info = { tag: tag, constraint: cn, constant: 0.0 };
-            this._editMap.insert(variable, info);
+            this._editMap.set(variable, info);
         };
         /**
          * Remove an edit variable from the solver.
          */
         Solver.prototype.removeEditVariable = function (variable) {
-            var editPair = this._editMap.erase(variable);
-            if (editPair === undefined) {
+            var info = this._editMap.get(variable);
+            if (info === undefined) {
                 throw new Error("unknown edit variable");
             }
-            this.removeConstraint(editPair.second.constraint);
+            this._editMap.delete(variable);
+            this.removeConstraint(info.constraint);
         };
         /**
          * Test whether the solver contains the edit variable.
          */
         Solver.prototype.hasEditVariable = function (variable) {
-            return this._editMap.contains(variable);
+            return this._editMap.has(variable);
         };
         /**
          * Suggest the value of an edit variable.
          */
         Solver.prototype.suggestValue = function (variable, value) {
-            var editPair = this._editMap.find(variable);
-            if (editPair === undefined) {
+            var _this = this;
+            var info = this._editMap.get(variable);
+            if (info === undefined) {
                 throw new Error("unknown edit variable");
             }
             var rows = this._rowMap;
-            var info = editPair.second;
             var delta = value - info.constant;
             info.constant = value;
             // Check first if the positive error variable is basic.
             var marker = info.tag.marker;
-            var rowPair = rows.find(marker);
-            if (rowPair !== undefined) {
-                if (rowPair.second.add(-delta) < 0.0) {
+            var row = rows.get(marker);
+            if (row) {
+                if (row.add(-delta) < 0.0) {
                     this._infeasibleRows.push(marker);
                 }
                 this._dualOptimize();
@@ -1547,40 +490,37 @@ var kiwi;
             }
             // Check next if the negative error variable is basic.
             var other = info.tag.other;
-            var rowPair = rows.find(other);
-            if (rowPair !== undefined) {
-                if (rowPair.second.add(delta) < 0.0) {
+            var row = rows.get(other);
+            if (row) {
+                if (row.add(delta) < 0.0) {
                     this._infeasibleRows.push(other);
                 }
                 this._dualOptimize();
                 return;
             }
-            for (var i = 0, n = rows.size(); i < n; ++i) {
-                var rowPair = rows.itemAt(i);
-                var row = rowPair.second;
+            // Otherwise update each row where the error variables exist.
+            rows.forEach(function (row, symbol) {
                 var coeff = row.coefficientFor(marker);
-                if (coeff !== 0.0 && row.add(delta * coeff) < 0.0 && rowPair.first.type() !== 1 /* External */) {
-                    this._infeasibleRows.push(rowPair.first);
+                if (coeff !== 0.0 && row.add(delta * coeff) < 0.0 && symbol.type() !== 1 /* External */) {
+                    _this._infeasibleRows.push(symbol);
                 }
-            }
+            });
             this._dualOptimize();
         };
         /**
          * Update the values of the variables.
          */
         Solver.prototype.updateVariables = function () {
-            var vars = this._varMap;
-            var rows = this._rowMap;
-            for (var i = 0, n = vars.size(); i < n; ++i) {
-                var pair = vars.itemAt(i);
-                var rowPair = rows.find(pair.second);
-                if (rowPair !== undefined) {
-                    pair.first.setValue(rowPair.second.constant());
+            var _this = this;
+            this._varMap.forEach(function (symbol, variable) {
+                var row = _this._rowMap.get(symbol);
+                if (row !== undefined) {
+                    variable.setValue(row.constant());
                 }
                 else {
-                    pair.first.setValue(0.0);
+                    variable.setValue(0.0);
                 }
-            }
+            });
         };
         /**
          * Get the symbol for the given variable.
@@ -1588,9 +528,12 @@ var kiwi;
          * If a symbol does not exist for the variable, one will be created.
          */
         Solver.prototype._getVarSymbol = function (variable) {
-            var _this = this;
-            var factory = function () { return _this._makeSymbol(1 /* External */); };
-            return this._varMap.setDefault(variable, factory).second;
+            var symbol = this._varMap.get(variable);
+            if (!symbol) {
+                symbol = this._makeSymbol(1 /* External */);
+                this._varMap.set(variable, symbol);
+            }
+            return symbol;
         };
         /**
          * Create a new Row object for the given constraint.
@@ -1609,23 +552,22 @@ var kiwi;
          * Returns the created Row and the tag for tracking the constraint.
          */
         Solver.prototype._createRow = function (constraint) {
+            var _this = this;
             var expr = constraint.expression();
             var row = new Row(expr.constant());
             // Substitute the current basic variables into the row.
-            var terms = expr.terms();
-            for (var i = 0, n = terms.size(); i < n; ++i) {
-                var termPair = terms.itemAt(i);
-                if (!nearZero(termPair.second)) {
-                    var symbol = this._getVarSymbol(termPair.first);
-                    var basicPair = this._rowMap.find(symbol);
-                    if (basicPair !== undefined) {
-                        row.insertRow(basicPair.second, termPair.second);
+            expr.terms().forEach(function (coefficient, variable) {
+                if (!nearZero(coefficient)) {
+                    var symbol = _this._getVarSymbol(variable);
+                    var basicRow = _this._rowMap.get(symbol);
+                    if (basicRow !== undefined) {
+                        row.insertRow(basicRow, coefficient);
                     }
                     else {
-                        row.insertSymbol(symbol, termPair.second);
+                        row.insertSymbol(symbol, coefficient);
                     }
                 }
-            }
+            });
             // Add the necessary slack, error, and dummy variables.
             var objective = this._objective;
             var strength = constraint.strength();
@@ -1687,12 +629,14 @@ var kiwi;
          * If a subject cannot be found, an invalid symbol will be returned.
          */
         Solver.prototype._chooseSubject = function (row, tag) {
-            var cells = row.cells();
-            for (var i = 0, n = cells.size(); i < n; ++i) {
-                var pair = cells.itemAt(i);
-                if (pair.first.type() === 1 /* External */) {
-                    return pair.first;
+            var found = INVALID_SYMBOL;
+            row.cells().forEach(function (coefficient, symbol) {
+                if (found === INVALID_SYMBOL && symbol.type() === 1 /* External */) {
+                    found = symbol;
                 }
+            });
+            if (found !== INVALID_SYMBOL) {
+                return found;
             }
             var type = tag.marker.type();
             if (type === 2 /* Slack */ || type === 3 /* Error */) {
@@ -1716,7 +660,7 @@ var kiwi;
         Solver.prototype._addWithArtificialVariable = function (row) {
             // Create and add the artificial variable to the tableau.
             var art = this._makeSymbol(2 /* Slack */);
-            this._rowMap.insert(art, row.copy());
+            this._rowMap.set(art, row.copy());
             this._artificial = row.copy();
             // Optimize the artificial objective. This is successful
             // only if the artificial objective is optimized to zero.
@@ -1725,9 +669,9 @@ var kiwi;
             this._artificial = null;
             // If the artificial variable is basic, pivot the row so that
             // it becomes non-basic. If the row is constant, exit early.
-            var pair = this._rowMap.erase(art);
-            if (pair !== undefined) {
-                var basicRow = pair.second;
+            var basicRow = this._rowMap.get(art);
+            if (basicRow !== undefined) {
+                this._rowMap.delete(art);
                 if (basicRow.isConstant()) {
                     return success;
                 }
@@ -1737,13 +681,12 @@ var kiwi;
                 }
                 basicRow.solveForEx(art, entering);
                 this._substitute(entering, basicRow);
-                this._rowMap.insert(entering, basicRow);
+                this._rowMap.set(entering, basicRow);
             }
             // Remove the artificial variable from the tableau.
-            var rows = this._rowMap;
-            for (var i = 0, n = rows.size(); i < n; ++i) {
-                rows.itemAt(i).second.removeSymbol(art);
-            }
+            this._rowMap.forEach(function (row2) {
+                row2.removeSymbol(art);
+            });
             this._objective.removeSymbol(art);
             return success;
         };
@@ -1754,14 +697,13 @@ var kiwi;
          * in the tableau and the objective function with the given row.
          */
         Solver.prototype._substitute = function (symbol, row) {
-            var rows = this._rowMap;
-            for (var i = 0, n = rows.size(); i < n; ++i) {
-                var pair = rows.itemAt(i);
-                pair.second.substitute(symbol, row);
-                if (pair.second.constant() < 0.0 && pair.first.type() !== 1 /* External */) {
-                    this._infeasibleRows.push(pair.first);
+            var _this = this;
+            this._rowMap.forEach(function (enumRow, enumSymbol) {
+                enumRow.substitute(symbol, row);
+                if (enumRow.constant() < 0.0 && enumSymbol.type() !== 1 /* External */) {
+                    _this._infeasibleRows.push(enumSymbol);
                 }
-            }
+            });
             this._objective.substitute(symbol, row);
             if (this._artificial) {
                 this._artificial.substitute(symbol, row);
@@ -1784,10 +726,11 @@ var kiwi;
                     throw new Error("the objective is unbounded");
                 }
                 // pivot the entering symbol into the basis
-                var row = this._rowMap.erase(leaving).second;
+                var row = this._rowMap.get(leaving);
+                this._rowMap.delete(leaving);
                 row.solveForEx(leaving, entering);
                 this._substitute(entering, row);
-                this._rowMap.insert(entering, row);
+                this._rowMap.set(entering, row);
             }
         };
         /**
@@ -1803,18 +746,17 @@ var kiwi;
             var infeasible = this._infeasibleRows;
             while (infeasible.length !== 0) {
                 var leaving = infeasible.pop();
-                var pair = rows.find(leaving);
-                if (pair !== undefined && pair.second.constant() < 0.0) {
-                    var entering = this._getDualEnteringSymbol(pair.second);
+                var row = rows.get(leaving);
+                if (row && (row.constant() < 0.0)) {
+                    var entering = this._getDualEnteringSymbol(row);
                     if (entering.type() === 0 /* Invalid */) {
                         throw new Error("dual optimize failed");
                     }
                     // pivot the entering symbol into the basis
-                    var row = pair.second;
-                    rows.erase(leaving);
+                    rows.delete(leaving);
                     row.solveForEx(leaving, entering);
                     this._substitute(entering, row);
-                    rows.insert(entering, row);
+                    rows.set(entering, row);
                 }
             }
         };
@@ -1827,15 +769,13 @@ var kiwi;
          * invalid symbol is returned.
          */
         Solver.prototype._getEnteringSymbol = function (objective) {
-            var cells = objective.cells();
-            for (var i = 0, n = cells.size(); i < n; ++i) {
-                var pair = cells.itemAt(i);
-                var symbol = pair.first;
-                if (pair.second < 0.0 && symbol.type() !== 4 /* Dummy */) {
-                    return symbol;
+            var found = INVALID_SYMBOL;
+            objective.cells().forEach(function (coefficient, symbol) {
+                if ((found === INVALID_SYMBOL) && coefficient < 0.0 && symbol.type() !== 4 /* Dummy */) {
+                    found = symbol;
                 }
-            }
-            return INVALID_SYMBOL;
+            });
+            return found;
         };
         /**
          * Compute the entering symbol for the dual optimize operation.
@@ -1847,22 +787,19 @@ var kiwi;
          * is returned.
          */
         Solver.prototype._getDualEnteringSymbol = function (row) {
+            var _this = this;
             var ratio = Number.MAX_VALUE;
             var entering = INVALID_SYMBOL;
-            var cells = row.cells();
-            for (var i = 0, n = cells.size(); i < n; ++i) {
-                var pair = cells.itemAt(i);
-                var symbol = pair.first;
-                var c = pair.second;
+            row.cells().forEach(function (c, symbol) {
                 if (c > 0.0 && symbol.type() !== 4 /* Dummy */) {
-                    var coeff = this._objective.coefficientFor(symbol);
+                    var coeff = _this._objective.coefficientFor(symbol);
                     var r = coeff / c;
                     if (r < ratio) {
                         ratio = r;
                         entering = symbol;
                     }
                 }
-            }
+            });
             return entering;
         };
         /**
@@ -1876,12 +813,8 @@ var kiwi;
         Solver.prototype._getLeavingSymbol = function (entering) {
             var ratio = Number.MAX_VALUE;
             var found = INVALID_SYMBOL;
-            var rows = this._rowMap;
-            for (var i = 0, n = rows.size(); i < n; ++i) {
-                var pair = rows.itemAt(i);
-                var symbol = pair.first;
+            this._rowMap.forEach(function (row, symbol) {
                 if (symbol.type() !== 1 /* External */) {
-                    var row = pair.second;
                     var temp = row.coefficientFor(entering);
                     if (temp < 0.0) {
                         var temp_ratio = -row.constant() / temp;
@@ -1891,7 +824,7 @@ var kiwi;
                         }
                     }
                 }
-            }
+            });
             return found;
         };
         /**
@@ -1921,33 +854,28 @@ var kiwi;
             var first = invalid;
             var second = invalid;
             var third = invalid;
-            var rows = this._rowMap;
-            for (var i = 0, n = rows.size(); i < n; ++i) {
-                var pair = rows.itemAt(i);
-                var row = pair.second;
+            this._rowMap.forEach(function (row, symbol) {
                 var c = row.coefficientFor(marker);
-                if (c === 0.0) {
-                    continue;
-                }
-                var symbol = pair.first;
-                if (symbol.type() === 1 /* External */) {
-                    third = symbol;
-                }
-                else if (c < 0.0) {
-                    var r = -row.constant() / c;
-                    if (r < r1) {
-                        r1 = r;
-                        first = symbol;
+                if (c !== 0.0) {
+                    if (symbol.type() === 1 /* External */) {
+                        third = symbol;
+                    }
+                    else if (c < 0.0) {
+                        var r = -row.constant() / c;
+                        if (r < r1) {
+                            r1 = r;
+                            first = symbol;
+                        }
+                    }
+                    else {
+                        var r = row.constant() / c;
+                        if (r < r2) {
+                            r2 = r;
+                            second = symbol;
+                        }
                     }
                 }
-                else {
-                    var r = row.constant() / c;
-                    if (r < r2) {
-                        r2 = r;
-                        second = symbol;
-                    }
-                }
-            }
+            });
             if (first !== invalid) {
                 return first;
             }
@@ -1971,9 +899,9 @@ var kiwi;
          * Remove the effects of an error marker on the objective function.
          */
         Solver.prototype._removeMarkerEffects = function (marker, strength) {
-            var pair = this._rowMap.find(marker);
-            if (pair !== undefined) {
-                this._objective.insertRow(pair.second, -strength);
+            var row = this._rowMap.get(marker);
+            if (row) {
+                this._objective.insertRow(row, -strength);
             }
             else {
                 this._objective.insertSymbol(marker, -strength);
@@ -1985,15 +913,14 @@ var kiwi;
          * If no such symbol is present, an invalid symbol will be returned.
          */
         Solver.prototype._anyPivotableSymbol = function (row) {
-            var cells = row.cells();
-            for (var i = 0, n = cells.size(); i < n; ++i) {
-                var pair = cells.itemAt(i);
-                var type = pair.first.type();
-                if (type === 2 /* Slack */ || type === 3 /* Error */) {
-                    return pair.first;
+            var found = INVALID_SYMBOL;
+            row.cells().forEach(function (coefficient, symbol) {
+                var type = symbol.type();
+                if (found === INVALID_SYMBOL && (type === 2 /* Slack */ || type === 3 /* Error */)) {
+                    found = symbol;
                 }
-            }
-            return INVALID_SYMBOL;
+            });
+            return found;
         };
         /**
          * Returns a new Symbol of the given type.
@@ -2010,30 +937,6 @@ var kiwi;
     function nearZero(value) {
         var eps = 1.0e-8;
         return value < 0.0 ? -value < eps : value < eps;
-    }
-    /**
-     * An internal function for creating a constraint map.
-     */
-    function createCnMap() {
-        return kiwi.createMap(kiwi.Constraint.Compare);
-    }
-    /**
-     * An internal function for creating a row map.
-     */
-    function createRowMap() {
-        return kiwi.createMap(Symbol.Compare);
-    }
-    /**
-     * An internal function for creating a variable map.
-     */
-    function createVarMap() {
-        return kiwi.createMap(kiwi.Variable.Compare);
-    }
-    /**
-     * An internal function for creating an edit map.
-     */
-    function createEditMap() {
-        return kiwi.createMap(kiwi.Variable.Compare);
     }
     /**
      * An enum defining the available symbol types.
@@ -2061,12 +964,6 @@ var kiwi;
             this._type = type;
         }
         /**
-         * The static Symbol comparison function.
-         */
-        Symbol.Compare = function (a, b) {
-            return a.id() - b.id();
-        };
-        /**
          * Returns the unique id number of the symbol.
          */
         Symbol.prototype.id = function () {
@@ -2093,7 +990,7 @@ var kiwi;
          */
         function Row(constant) {
             if (constant === void 0) { constant = 0.0; }
-            this._cellMap = kiwi.createMap(Symbol.Compare);
+            this._cellMap = new Map();
             this._constant = constant;
         }
         /**
@@ -2112,27 +1009,28 @@ var kiwi;
          * Returns true if the row is a constant value.
          */
         Row.prototype.isConstant = function () {
-            return this._cellMap.empty();
+            return this._cellMap.size === 0;
         };
         /**
          * Returns true if the Row has all dummy symbols.
          */
         Row.prototype.allDummies = function () {
-            var cells = this._cellMap;
-            for (var i = 0, n = cells.size(); i < n; ++i) {
-                var pair = cells.itemAt(i);
-                if (pair.first.type() !== 4 /* Dummy */) {
-                    return false;
+            var found = true;
+            this._cellMap.forEach(function (coefficient, symbol) {
+                if (symbol.type() !== 4 /* Dummy */) {
+                    found = false;
                 }
-            }
-            return true;
+            });
+            return found;
         };
         /**
          * Create a copy of the row.
          */
         Row.prototype.copy = function () {
             var theCopy = new Row(this._constant);
-            theCopy._cellMap = this._cellMap.copy();
+            this._cellMap.forEach(function (coefficient, symbol) {
+                theCopy._cellMap.set(symbol, coefficient);
+            });
             return theCopy;
         };
         /**
@@ -2152,9 +1050,10 @@ var kiwi;
          */
         Row.prototype.insertSymbol = function (symbol, coefficient) {
             if (coefficient === void 0) { coefficient = 1.0; }
-            var pair = this._cellMap.setDefault(symbol, function () { return 0.0; });
-            if (nearZero(pair.second += coefficient)) {
-                this._cellMap.erase(symbol);
+            coefficient += this._cellMap.get(symbol) || 0;
+            this._cellMap.set(symbol, coefficient);
+            if (nearZero(coefficient)) {
+                this._cellMap.delete(symbol);
             }
         };
         /**
@@ -2166,30 +1065,28 @@ var kiwi;
          * from the row.
          */
         Row.prototype.insertRow = function (other, coefficient) {
+            var _this = this;
             if (coefficient === void 0) { coefficient = 1.0; }
             this._constant += other._constant * coefficient;
-            var cells = other._cellMap;
-            for (var i = 0, n = cells.size(); i < n; ++i) {
-                var pair = cells.itemAt(i);
-                this.insertSymbol(pair.first, pair.second * coefficient);
-            }
+            other._cellMap.forEach(function (otherCoeff, otherSymbol) {
+                _this.insertSymbol(otherSymbol, otherCoeff * coefficient);
+            });
         };
         /**
          * Remove a symbol from the row.
          */
         Row.prototype.removeSymbol = function (symbol) {
-            this._cellMap.erase(symbol);
+            this._cellMap.delete(symbol);
         };
         /**
          * Reverse the sign of the constant and cells in the row.
          */
         Row.prototype.reverseSign = function () {
+            var _this = this;
             this._constant = -this._constant;
-            var cells = this._cellMap;
-            for (var i = 0, n = cells.size(); i < n; ++i) {
-                var pair = cells.itemAt(i);
-                pair.second = -pair.second;
-            }
+            this._cellMap.forEach(function (coefficient, symbol) {
+                _this._cellMap.set(symbol, -coefficient);
+            });
         };
         /**
          * Solve the row for the given symbol.
@@ -2205,12 +1102,12 @@ var kiwi;
          */
         Row.prototype.solveFor = function (symbol) {
             var cells = this._cellMap;
-            var pair = cells.erase(symbol);
-            var coeff = -1.0 / pair.second;
+            var coeff = -1.0 / cells.get(symbol);
+            cells.delete(symbol);
             this._constant *= coeff;
-            for (var i = 0, n = cells.size(); i < n; ++i) {
-                cells.itemAt(i).second *= coeff;
-            }
+            cells.forEach(function (c, sym) {
+                cells.set(sym, c * coeff);
+            });
         };
         /**
          * Solve the row for the given symbols.
@@ -2232,8 +1129,7 @@ var kiwi;
          * Returns the coefficient for the given symbol.
          */
         Row.prototype.coefficientFor = function (symbol) {
-            var pair = this._cellMap.find(symbol);
-            return pair !== undefined ? pair.second : 0.0;
+            return this._cellMap.get(symbol) || 0.0;
         };
         /**
          * Substitute a symbol with the data from another row.
@@ -2245,9 +1141,10 @@ var kiwi;
          * If the symbol does not exist in the row, this is a no-op.
          */
         Row.prototype.substitute = function (symbol, row) {
-            var pair = this._cellMap.erase(symbol);
-            if (pair !== undefined) {
-                this.insertRow(row, pair.second);
+            var existingRow = this._cellMap.get(symbol);
+            if (existingRow !== undefined) {
+                this._cellMap.delete(symbol);
+                this.insertRow(row, existingRow);
             }
         };
         return Row;
@@ -2262,7 +1159,6 @@ var kiwi;
 |----------------------------------------------------------------------------*/
 /// <reference path="constraint.ts"/>
 /// <reference path="expression.ts"/>
-/// <reference path="maptype.ts"/>
 /// <reference path="solver.ts"/>
 /// <reference path="strength.ts"/>
 /// <reference path="variable.ts"/>

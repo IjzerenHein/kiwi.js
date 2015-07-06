@@ -8,7 +8,6 @@
 
 /// <reference path="constraint.ts"/>
 /// <reference path="expression.ts"/>
-/// <reference path="maptype.ts"/>
 /// <reference path="solver.ts"/>
 /// <reference path="strength.ts"/>
 /// <reference path="variable.ts"/>

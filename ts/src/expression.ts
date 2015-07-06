@@ -6,8 +6,6 @@
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-/// <reference path="../thirdparty/tsu.d.ts"/>
-/// <reference path="maptype.ts"/>
 /// <reference path="variable.ts"/>
 
 module kiwi
@@ -45,7 +43,7 @@ module kiwi
          *
          * This *must* be treated as const.
          */
-        terms(): IMap<Variable, number>
+        terms(): Map<Variable, number>
         {
             return this._terms;
         }
@@ -64,14 +62,15 @@ module kiwi
         value(): number
         {
             var result = this._constant;
-            tsu.forEach( this._terms, ( pair ) =>
+
+            this._terms.forEach( ( coefficient, variable ) =>
             {
-                result += pair.first.value() * pair.second;
+                result += variable.value() * coefficient;
             } );
             return result;
         }
 
-        private _terms: IMap<Variable, number>;
+        private _terms: Map<Variable, number>;
         private _constant: number;
     }
 
@@ -81,7 +80,7 @@ module kiwi
      */
     interface IParseResult
     {
-        terms: IMap<Variable, number>;
+        terms: Map<Variable, number>;
         constant: number;
     }
 
@@ -92,8 +91,7 @@ module kiwi
     function parseArgs( args: IArguments ): IParseResult
     {
         var constant = 0.0;
-        var factory = () => 0.0;
-        var terms = createMap<Variable, number>( Variable.Compare );
+        var terms = new Map<Variable, number>();
         for( var i = 0, n = args.length; i < n; ++i )
         {
             var item = args[ i ];
@@ -103,7 +101,7 @@ module kiwi
             }
             else if( item instanceof Variable )
             {
-                terms.setDefault( item, factory ).second += 1.0;
+                terms.set(item, 1.0);
             }
             else if( item instanceof Array )
             {
@@ -121,7 +119,7 @@ module kiwi
                 {
                     throw new Error( "array item 1 must be a variable" );
                 }
-                terms.setDefault( variable, factory ).second += value;
+                terms.set(variable, value);
             }
             else
             {

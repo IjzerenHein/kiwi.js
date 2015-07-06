@@ -6,10 +6,8 @@
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-/// <reference path="../thirdparty/tsu.d.ts"/>
 /// <reference path="constraint.ts"/>
 /// <reference path="expression.ts"/>
-/// <reference path="maptype.ts"/>
 /// <reference path="strength.ts"/>
 /// <reference path="variable.ts"/>
 
@@ -34,8 +32,7 @@ module kiwi
          */
         addConstraint( constraint: Constraint ): void
         {
-            var cnPair = this._cnMap.find( constraint );
-            if( cnPair !== undefined )
+            if( this._cnMap.has( constraint ) )
             {
                 throw new Error( "duplicate constraint" );
             }
@@ -83,10 +80,10 @@ module kiwi
             {
                 row.solveFor( subject );
                 this._substitute( subject, row );
-                this._rowMap.insert( subject, row );
+                this._rowMap.set( subject, row );
             }
 
-            this._cnMap.insert( constraint, tag );
+            this._cnMap.set( constraint, tag );
 
             // Optimizing after each constraint is added performs less
             // aggregate work due to a smaller average system size. It
@@ -99,31 +96,32 @@ module kiwi
          */
         removeConstraint( constraint: Constraint ): void
         {
-            var cnPair = this._cnMap.erase( constraint );
-            if( cnPair === undefined )
+            var tag = this._cnMap.get(constraint);
+            if( !tag )
             {
                 throw new Error( "unknown constraint" );
             }
+            this._cnMap.delete( constraint );
 
             // Remove the error effects from the objective function
             // *before* pivoting, or substitutions into the objective
             // will lead to incorrect solver results.
-            this._removeConstraintEffects( constraint, cnPair.second );
+            this._removeConstraintEffects( constraint, tag );
 
             // If the marker is basic, simply drop the row. Otherwise,
             // pivot the marker into the basis and then drop the row.
-            var marker = cnPair.second.marker;
-            var rowPair = this._rowMap.erase( marker );
-            if( rowPair === undefined )
+            var marker = tag.marker;
+            if( !this._rowMap.delete( marker ) )
             {
                 var leaving = this._getMarkerLeavingSymbol( marker );
                 if( leaving.type() === SymbolType.Invalid )
                 {
                     throw new Error( "failed to find leaving row" );
                 }
-                rowPair = this._rowMap.erase( leaving );
-                rowPair.second.solveForEx( leaving, marker );
-                this._substitute( marker, rowPair.second );
+                var row = this._rowMap.get( leaving );
+                this._rowMap.delete( leaving );
+                row.solveForEx( leaving, marker );
+                this._substitute( marker, row );
             }
 
             // Optimizing after each constraint is removed ensures that the
@@ -137,7 +135,7 @@ module kiwi
          */
         hasConstraint( constraint: Constraint ): boolean
         {
-            return this._cnMap.contains( constraint );
+            return this._cnMap.has( constraint );
         }
 
         /**
@@ -145,8 +143,7 @@ module kiwi
          */
         addEditVariable( variable: Variable, strength: number ): void
         {
-            var editPair = this._editMap.find( variable );
-            if( editPair !== undefined )
+            if( this._editMap.has( variable ) )
             {
                 throw new Error( "duplicate edit variable" );
             }
@@ -158,9 +155,9 @@ module kiwi
             var expr = new Expression( variable );
             var cn = new Constraint( expr, Operator.Eq, strength );
             this.addConstraint( cn );
-            var tag = this._cnMap.find( cn ).second;
+            var tag = this._cnMap.get( cn );
             var info = { tag: tag, constraint: cn, constant: 0.0 };
-            this._editMap.insert( variable, info );
+            this._editMap.set( variable, info );
         }
 
         /**
@@ -168,12 +165,13 @@ module kiwi
          */
         removeEditVariable( variable: Variable ): void
         {
-            var editPair = this._editMap.erase( variable );
-            if( editPair === undefined )
+            var info = this._editMap.get( variable );
+            if( info === undefined )
             {
                 throw new Error( "unknown edit variable" );
             }
-            this.removeConstraint( editPair.second.constraint );
+            this._editMap.delete( variable );
+            this.removeConstraint( info.constraint );
         }
 
         /**
@@ -181,7 +179,7 @@ module kiwi
          */
         hasEditVariable( variable: Variable ): boolean
         {
-            return this._editMap.contains( variable );
+            return this._editMap.has( variable );
         }
 
         /**
@@ -189,23 +187,22 @@ module kiwi
          */
         suggestValue( variable: Variable, value: number ): void
         {
-            var editPair = this._editMap.find( variable );
-            if( editPair === undefined )
+            var info = this._editMap.get( variable );
+            if( info === undefined )
             {
                 throw new Error( "unknown edit variable" );
             }
 
             var rows = this._rowMap;
-            var info = editPair.second;
             var delta = value - info.constant;
             info.constant = value;
 
             // Check first if the positive error variable is basic.
             var marker = info.tag.marker;
-            var rowPair = rows.find( marker );
-            if( rowPair !== undefined )
+            var row = rows.get( marker );
+            if( row )
             {
-                if( rowPair.second.add( -delta ) < 0.0 )
+                if( row.add( -delta ) < 0.0 )
                 {
                     this._infeasibleRows.push( marker );
                 }
@@ -215,10 +212,10 @@ module kiwi
 
             // Check next if the negative error variable is basic.
             var other = info.tag.other;
-            var rowPair = rows.find( other );
-            if( rowPair !== undefined )
+            var row = rows.get( other );
+            if( row )
             {
-                if( rowPair.second.add( delta ) < 0.0 )
+                if( row.add( delta ) < 0.0 )
                 {
                     this._infeasibleRows.push( other );
                 }
@@ -227,17 +224,14 @@ module kiwi
             }
 
             // Otherwise update each row where the error variables exist.
-            for( var i = 0, n = rows.size(); i < n; ++i )
-            {
-                var rowPair = rows.itemAt( i );
-                var row = rowPair.second;
+            rows.forEach((row, symbol) => {
                 var coeff = row.coefficientFor( marker );
                 if( coeff !== 0.0 && row.add( delta * coeff ) < 0.0 &&
-                    rowPair.first.type() !== SymbolType.External )
+                    symbol.type() !== SymbolType.External )
                 {
-                    this._infeasibleRows.push( rowPair.first );
+                    this._infeasibleRows.push( symbol );
                 }
-            }
+            });
             this._dualOptimize();
         }
 
@@ -246,21 +240,17 @@ module kiwi
          */
         updateVariables(): void
         {
-            var vars = this._varMap;
-            var rows = this._rowMap;
-            for( var i = 0, n = vars.size(); i < n; ++i )
-            {
-                var pair = vars.itemAt( i );
-                var rowPair = rows.find( pair.second );
-                if( rowPair !== undefined )
+            this._varMap.forEach((symbol, variable) => {
+                var row = this._rowMap.get( symbol );
+                if( row !== undefined )
                 {
-                    pair.first.setValue( rowPair.second.constant() );
+                    variable.setValue( row.constant() );
                 }
                 else
                 {
-                    pair.first.setValue( 0.0 );
+                    variable.setValue( 0.0 );
                 }
-            }
+            });
         }
 
         /**
@@ -270,8 +260,12 @@ module kiwi
          */
         private _getVarSymbol( variable: Variable ): Symbol
         {
-            var factory = () => this._makeSymbol( SymbolType.External );
-            return this._varMap.setDefault( variable, factory ).second;
+            var symbol = this._varMap.get( variable );
+            if( !symbol ) {
+                symbol = this._makeSymbol( SymbolType.External );
+                this._varMap.set( variable, symbol );
+            }
+            return symbol;
         }
 
         /**
@@ -296,24 +290,21 @@ module kiwi
             var row = new Row( expr.constant() );
 
             // Substitute the current basic variables into the row.
-            var terms = expr.terms();
-            for( var i = 0, n = terms.size(); i < n; ++i )
-            {
-                var termPair = terms.itemAt( i );
-                if( !nearZero( termPair.second ) )
+            expr.terms().forEach((coefficient, variable) => {
+                if( !nearZero( coefficient ) )
                 {
-                    var symbol = this._getVarSymbol( termPair.first );
-                    var basicPair = this._rowMap.find( symbol );
-                    if( basicPair !== undefined )
+                    var symbol = this._getVarSymbol( variable );
+                    var basicRow = this._rowMap.get( symbol );
+                    if( basicRow !== undefined )
                     {
-                        row.insertRow( basicPair.second, termPair.second );
+                        row.insertRow( basicRow, coefficient );
                     }
                     else
                     {
-                        row.insertSymbol( symbol, termPair.second );
+                        row.insertSymbol( symbol, coefficient );
                     }
                 }
-            }
+            });
 
             // Add the necessary slack, error, and dummy variables.
             var objective = this._objective;
@@ -385,14 +376,16 @@ module kiwi
          */
         private _chooseSubject( row: Row, tag: ITag ): Symbol
         {
-            var cells = row.cells();
-            for( var i = 0, n = cells.size(); i < n; ++i )
-            {
-                var pair = cells.itemAt( i );
-                if( pair.first.type() === SymbolType.External )
+            var found = INVALID_SYMBOL;
+            row.cells().forEach((coefficient, symbol) => {
+                if( found === INVALID_SYMBOL && symbol.type() === SymbolType.External )
                 {
-                    return pair.first;
+                    found = symbol;
                 }
+            });
+            if( found !== INVALID_SYMBOL )
+            {
+                return found;
             }
             var type = tag.marker.type();
             if( type === SymbolType.Slack || type === SymbolType.Error )
@@ -422,7 +415,7 @@ module kiwi
         {
             // Create and add the artificial variable to the tableau.
             var art = this._makeSymbol( SymbolType.Slack );
-            this._rowMap.insert( art, row.copy() );
+            this._rowMap.set( art, row.copy() );
             this._artificial = row.copy();
 
             // Optimize the artificial objective. This is successful
@@ -433,10 +426,10 @@ module kiwi
 
             // If the artificial variable is basic, pivot the row so that
             // it becomes non-basic. If the row is constant, exit early.
-            var pair = this._rowMap.erase( art );
-            if( pair !== undefined )
+            var basicRow = this._rowMap.get( art );
+            if( basicRow !== undefined )
             {
-                var basicRow = pair.second;
+                this._rowMap.delete( art );
                 if( basicRow.isConstant() )
                 {
                     return success;
@@ -448,15 +441,13 @@ module kiwi
                 }
                 basicRow.solveForEx( art, entering );
                 this._substitute( entering, basicRow );
-                this._rowMap.insert( entering, basicRow );
+                this._rowMap.set( entering, basicRow );
             }
 
             // Remove the artificial variable from the tableau.
-            var rows = this._rowMap;
-            for( var i = 0, n = rows.size(); i < n; ++i )
-            {
-                rows.itemAt( i ).second.removeSymbol( art );
-            }
+            this._rowMap.forEach((row2) => {
+                row2.removeSymbol( art );
+            });
             this._objective.removeSymbol( art );
             return success;
         }
@@ -469,17 +460,14 @@ module kiwi
          */
         private _substitute( symbol: Symbol, row: Row ): void
         {
-            var rows = this._rowMap;
-            for( var i = 0, n = rows.size(); i < n; ++i )
-            {
-                var pair = rows.itemAt( i );
-                pair.second.substitute( symbol, row );
-                if( pair.second.constant() < 0.0 &&
-                    pair.first.type() !== SymbolType.External )
+            this._rowMap.forEach((enumRow, enumSymbol) => {
+                enumRow.substitute( symbol, row );
+                if( enumRow.constant() < 0.0 &&
+                    enumSymbol.type() !== SymbolType.External )
                 {
-                    this._infeasibleRows.push( pair.first );
+                    this._infeasibleRows.push( enumSymbol );
                 }
-            }
+            });
             this._objective.substitute( symbol, row );
             if( this._artificial )
             {
@@ -508,10 +496,11 @@ module kiwi
                     throw new Error( "the objective is unbounded" );
                 }
                 // pivot the entering symbol into the basis
-                var row = this._rowMap.erase( leaving ).second;
+                var row = this._rowMap.get( leaving );
+                this._rowMap.delete( leaving );
                 row.solveForEx( leaving, entering );
                 this._substitute( entering, row );
-                this._rowMap.insert( entering, row );
+                this._rowMap.set( entering, row );
             }
         }
 
@@ -530,20 +519,19 @@ module kiwi
             while( infeasible.length !== 0 )
             {
                 var leaving = infeasible.pop();
-                var pair = rows.find( leaving );
-                if( pair !== undefined && pair.second.constant() < 0.0 )
+                var row = rows.get( leaving );
+                if( row && (row.constant() < 0.0) )
                 {
-                    var entering = this._getDualEnteringSymbol( pair.second );
+                    var entering = this._getDualEnteringSymbol( row );
                     if( entering.type() === SymbolType.Invalid )
                     {
                         throw new Error( "dual optimize failed" );
                     }
                     // pivot the entering symbol into the basis
-                    var row = pair.second;
-                    rows.erase( leaving );
+                    rows.delete( leaving );
                     row.solveForEx( leaving, entering );
                     this._substitute( entering, row );
-                    rows.insert( entering, row );
+                    rows.set( entering, row );
                 }
             }
         }
@@ -558,17 +546,14 @@ module kiwi
          */
         private _getEnteringSymbol( objective: Row ): Symbol
         {
-            var cells = objective.cells();
-            for( var i = 0, n = cells.size(); i < n; ++i )
-            {
-                var pair = cells.itemAt( i );
-                var symbol = pair.first;
-                if( pair.second < 0.0 && symbol.type() !== SymbolType.Dummy )
+            var found = INVALID_SYMBOL;
+            objective.cells().forEach((coefficient, symbol) => {
+                if( (found === INVALID_SYMBOL) && coefficient < 0.0 && symbol.type() !== SymbolType.Dummy )
                 {
-                    return symbol;
+                    found = symbol;
                 }
-            }
-            return INVALID_SYMBOL;
+            });
+            return found;
         }
 
         /**
@@ -584,12 +569,7 @@ module kiwi
         {
             var ratio = Number.MAX_VALUE;
             var entering = INVALID_SYMBOL;
-            var cells = row.cells();
-            for( var i = 0, n = cells.size(); i < n; ++i )
-            {
-                var pair = cells.itemAt( i );
-                var symbol = pair.first;
-                var c = pair.second;
+            row.cells().forEach( (c, symbol ) => {
                 if( c > 0.0 && symbol.type() !== SymbolType.Dummy )
                 {
                     var coeff = this._objective.coefficientFor( symbol );
@@ -600,7 +580,7 @@ module kiwi
                         entering = symbol;
                     }
                 }
-            }
+            });
             return entering;
         }
 
@@ -616,14 +596,9 @@ module kiwi
         {
             var ratio = Number.MAX_VALUE;
             var found = INVALID_SYMBOL;
-            var rows = this._rowMap;
-            for( var i = 0, n = rows.size(); i < n; ++i )
-            {
-                var pair = rows.itemAt( i );
-                var symbol = pair.first;
+            this._rowMap.forEach((row, symbol) => {
                 if( symbol.type() !== SymbolType.External )
                 {
-                    var row = pair.second;
                     var temp = row.coefficientFor( entering );
                     if( temp < 0.0 )
                     {
@@ -635,7 +610,7 @@ module kiwi
                         }
                     }
                 }
-            }
+            });
             return found;
         }
 
@@ -667,40 +642,33 @@ module kiwi
             var first = invalid;
             var second = invalid;
             var third = invalid;
-            var rows = this._rowMap;
-            for( var i = 0, n = rows.size(); i < n; ++i )
-            {
-                var pair = rows.itemAt( i );
-                var row = pair.second;
+            this._rowMap.forEach((row, symbol) => {
                 var c = row.coefficientFor( marker );
-                if( c === 0.0 )
-                {
-                    continue;
-                }
-                var symbol = pair.first;
-                if( symbol.type() === SymbolType.External )
-                {
-                    third = symbol;
-                }
-                else if( c < 0.0 )
-                {
-                    var r = -row.constant() / c;
-                    if( r < r1 )
+                if( c !== 0.0 ) {
+                    if( symbol.type() === SymbolType.External )
                     {
-                        r1 = r;
-                        first = symbol;
+                        third = symbol;
+                    }
+                    else if( c < 0.0 )
+                    {
+                        var r = -row.constant() / c;
+                        if( r < r1 )
+                        {
+                            r1 = r;
+                            first = symbol;
+                        }
+                    }
+                    else
+                    {
+                        var r = row.constant() / c;
+                        if( r < r2 )
+                        {
+                            r2 = r;
+                            second = symbol;
+                        }
                     }
                 }
-                else
-                {
-                    var r = row.constant() / c;
-                    if( r < r2 )
-                    {
-                        r2 = r;
-                        second = symbol;
-                    }
-                }
-            }
+            });
             if( first !== invalid )
             {
                 return first;
@@ -732,10 +700,10 @@ module kiwi
          */
         private _removeMarkerEffects( marker: Symbol, strength: number ): void
         {
-            var pair = this._rowMap.find( marker );
-            if( pair !== undefined )
+            var row = this._rowMap.get( marker );
+            if( row )
             {
-                this._objective.insertRow( pair.second, -strength );
+                this._objective.insertRow( row, -strength );
             }
             else
             {
@@ -750,17 +718,15 @@ module kiwi
          */
         private _anyPivotableSymbol( row: Row ): Symbol
         {
-            var cells = row.cells();
-            for( var i = 0, n = cells.size(); i < n; ++i )
-            {
-                var pair = cells.itemAt( i );
-                var type = pair.first.type();
-                if( type === SymbolType.Slack || type === SymbolType.Error )
+            var found = INVALID_SYMBOL;
+            row.cells().forEach((coefficient, symbol) => {
+                var type = symbol.type();
+                if( found === INVALID_SYMBOL && (type === SymbolType.Slack || type === SymbolType.Error) )
                 {
-                    return pair.first;
+                    found = symbol;
                 }
-            }
-            return INVALID_SYMBOL;
+            });
+            return found;
         }
 
         /**
@@ -771,10 +737,10 @@ module kiwi
             return new Symbol( type, this._idTick++ );
         }
 
-        private _cnMap = createCnMap();
-        private _rowMap = createRowMap();
-        private _varMap = createVarMap();
-        private _editMap = createEditMap();
+        private _cnMap = new Map<Constraint, ITag>();
+        private _rowMap = new Map<Symbol, Row>();
+        private _varMap = new Map<Variable, Symbol>();
+        private _editMap = new Map<Variable, IEditInfo>();
         private _infeasibleRows: Symbol[] = [];
         private _objective: Row = new Row();
         private _artificial: Row = null;
@@ -824,42 +790,6 @@ module kiwi
 
 
     /**
-     * An internal function for creating a constraint map.
-     */
-    function createCnMap(): IMap<Constraint, ITag>
-    {
-        return createMap<Constraint, ITag>( Constraint.Compare );
-    }
-
-
-    /**
-     * An internal function for creating a row map.
-     */
-    function createRowMap(): IMap<Symbol, Row>
-    {
-        return createMap<Symbol, Row>( Symbol.Compare );
-    }
-
-
-    /**
-     * An internal function for creating a variable map.
-     */
-    function createVarMap(): IMap<Variable, Symbol>
-    {
-        return createMap<Variable, Symbol>( Variable.Compare );
-    }
-
-
-    /**
-     * An internal function for creating an edit map.
-     */
-    function createEditMap(): IMap<Variable, IEditInfo>
-    {
-        return createMap<Variable, IEditInfo>( Variable.Compare );
-    }
-
-
-    /**
      * An enum defining the available symbol types.
      */
     enum SymbolType
@@ -877,14 +807,6 @@ module kiwi
      */
     class Symbol
     {
-        /**
-         * The static Symbol comparison function.
-         */
-        static Compare( a: Symbol, b: Symbol ): number
-        {
-            return a.id() - b.id();
-        }
-
         /**
          * Construct a new Symbol
          *
@@ -940,7 +862,7 @@ module kiwi
         /**
          * Returns the mapping of symbols to coefficients.
          */
-        cells(): IMap<Symbol, number>
+        cells(): Map<Symbol, number>
         {
             return this._cellMap;
         }
@@ -958,7 +880,7 @@ module kiwi
          */
         isConstant(): boolean
         {
-            return this._cellMap.empty();
+            return this._cellMap.size === 0;
         }
 
         /**
@@ -966,16 +888,14 @@ module kiwi
          */
         allDummies(): boolean
         {
-            var cells = this._cellMap;
-            for( var i = 0, n = cells.size(); i < n; ++i )
-            {
-                var pair = cells.itemAt( i );
-                if( pair.first.type() !== SymbolType.Dummy )
+            var found = true;
+            this._cellMap.forEach((coefficient, symbol) => {
+                if( symbol.type() !== SymbolType.Dummy )
                 {
-                    return false;
+                    found = false;
                 }
-            }
-            return true;
+            });
+            return found;
         }
 
         /**
@@ -984,7 +904,9 @@ module kiwi
         copy(): Row
         {
             var theCopy = new Row( this._constant );
-            theCopy._cellMap = this._cellMap.copy();
+            this._cellMap.forEach((coefficient, symbol) => {
+                theCopy._cellMap.set(symbol, coefficient);
+            });
             return theCopy;
         }
 
@@ -1007,10 +929,10 @@ module kiwi
          */
         insertSymbol( symbol: Symbol, coefficient: number = 1.0 ): void
         {
-            var pair = this._cellMap.setDefault( symbol, () => 0.0 );
-            if( nearZero( pair.second += coefficient ) )
-            {
-                this._cellMap.erase( symbol );
+            coefficient += this._cellMap.get(symbol) || 0;
+            this._cellMap.set(symbol, coefficient);
+            if( nearZero( coefficient ) ) {
+                this._cellMap.delete( symbol );
             }
         }
 
@@ -1025,12 +947,9 @@ module kiwi
         insertRow( other: Row, coefficient: number = 1.0 ): void
         {
             this._constant += other._constant * coefficient;
-            var cells = other._cellMap;
-            for( var i = 0, n = cells.size(); i < n; ++i )
-            {
-                var pair = cells.itemAt( i );
-                this.insertSymbol( pair.first, pair.second * coefficient );
-            }
+            other._cellMap.forEach((otherCoeff, otherSymbol) => {
+                this.insertSymbol( otherSymbol, otherCoeff * coefficient );
+            });
         }
 
         /**
@@ -1038,7 +957,7 @@ module kiwi
          */
         removeSymbol( symbol: Symbol ): void
         {
-            this._cellMap.erase( symbol );
+            this._cellMap.delete( symbol );
         }
 
         /**
@@ -1047,12 +966,9 @@ module kiwi
         reverseSign(): void
         {
             this._constant = -this._constant;
-            var cells = this._cellMap;
-            for( var i = 0, n = cells.size(); i < n; ++i )
-            {
-                var pair = cells.itemAt( i );
-                pair.second = -pair.second;
-            }
+            this._cellMap.forEach((coefficient, symbol) => {
+                this._cellMap.set(symbol, -coefficient);
+            });
         }
 
         /**
@@ -1070,13 +986,12 @@ module kiwi
         solveFor( symbol: Symbol ): void
         {
             var cells = this._cellMap;
-            var pair = cells.erase( symbol );
-            var coeff = -1.0 / pair.second;
+            var coeff = -1.0 / cells.get( symbol );
+            cells.delete( symbol );
             this._constant *= coeff;
-            for( var i = 0, n = cells.size(); i < n; ++i )
-            {
-                cells.itemAt( i ).second *= coeff;
-            }
+            cells.forEach((c, sym) => {
+                cells.set( sym, c * coeff );
+            });
         }
 
         /**
@@ -1102,8 +1017,7 @@ module kiwi
          */
         coefficientFor( symbol: Symbol ): number
         {
-            var pair = this._cellMap.find( symbol );
-            return pair !== undefined ? pair.second : 0.0;
+            return this._cellMap.get( symbol ) || 0.0;
         }
 
         /**
@@ -1117,14 +1031,15 @@ module kiwi
          */
         substitute( symbol: Symbol, row: Row ): void
         {
-            var pair = this._cellMap.erase( symbol );
-            if( pair !== undefined )
+            var existingRow = this._cellMap.get( symbol );
+            if( existingRow !== undefined )
             {
-                this.insertRow( row, pair.second );
+                this._cellMap.delete( symbol );
+                this.insertRow( row, existingRow );
             }
         }
 
-        private _cellMap = createMap<Symbol, number>( Symbol.Compare );
+        private _cellMap = new Map<Symbol, number>();
         private _constant: number;
     }
 

@@ -17,14 +17,6 @@ module kiwi
     class Variable
     {
         /**
-         * A static variable comparison function.
-         */
-        static Compare( a: Variable, b: Variable ): number
-        {
-            return a.id() - b.id();
-        }
-
-        /**
          * Construct a new Variable
          *
          * @param [name] The name to associated with the variable.
