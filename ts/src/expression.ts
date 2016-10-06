@@ -121,6 +121,42 @@ module kiwi
             return new Expression([1 / coefficient, this]);
         }
 
+        isConstant(): boolean
+        {
+            return this._terms.size() == 0;
+        }
+        
+        toString(): string
+        {
+            var result = '';
+            var needsplus = false;
+          
+            if (this.isConstant())
+            {
+                return result;
+            }
+
+            if (this._constant !== 0)
+            {
+                result += this._constant;
+                needsplus = true;
+            }
+
+            for( var i = 0, n = this._terms.size(); i < n; i++ )
+            {
+                if (needsplus)
+                {
+                    result += " + ";
+                }
+            
+                var pair = this._terms.itemAt(i);
+                result += pair.second + "*" + pair.first.toString();
+                needsplus = true;
+            }
+
+            return result;
+        }
+        
         private _terms: IMap<Variable, number>;
         private _constant: number;
     }
