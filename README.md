@@ -70,7 +70,7 @@ assert(right, 500);
 
 ## Benchmarks
 
-To run the benchmark in the browser, [just visit this page](https://rawgit.com/IjzerenHein/kiwi/laster/bench/index.html).
+To run the benchmark in the browser, [just visit this page](https://rawgit.com/IjzerenHein/kiwi/master/bench/index.html).
 
 To run the benchmark locally using nodejs, *clone or download this repository* and execute the following steps:
 
