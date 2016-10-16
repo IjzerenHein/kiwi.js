@@ -1,6 +1,2 @@
-*.pyd
-*.so
-
-build/
-dist/
-kiwisolver.egg-info/
+node_modules
+tmp/
