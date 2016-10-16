@@ -1,7 +1,6 @@
-![Logo](logo.png)
+# kiwi.js
 
-[![Build Status](https://travis-ci.org/nucleic/kiwi.svg?branch=master)](https://travis-ci.org/nucleic/kiwi)
-[![view on npm](http://img.shields.io/npm/v/kiwi-solver.svg)](https://www.npmjs.org/package/kiwi-solver)
+[![view on npm](http://img.shields.io/npm/v/kiwi.js.svg)](https://www.npmjs.org/package/kiwi.js)
 
 Kiwi is an efficient implementation of the Cassowary constraint solving
 algorithm, based on the seminal Cassowary paper.
