@@ -25,7 +25,7 @@ Include kiwi in your html and javascript file:
 
 ```html
 <head>
-  <script type="text/javascript" src="node_modules/kiwi/lib/kiwi.js"></script>
+  <script type="text/javascript" src="node_modules/kiwi.js/lib/kiwi.js"></script>
 </head>
 ```
 
