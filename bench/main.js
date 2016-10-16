@@ -6,7 +6,7 @@ var _ = (typeof window === 'undefined') ? require('lodash') : window._;
 var Platform = (typeof window === 'undefined') ? require('platform') : window.Platform;
 var Benchmark = (typeof window === 'undefined') ? require('benchmark') : window.Benchmark;
 var c = (typeof window === 'undefined') ? require('cassowary') : window.c; // cassowary
-var kiwi = (typeof window === 'undefined') ? require('../bin/kiwi.js') : window.kiwi;
+var kiwi = (typeof window === 'undefined') ? require('../lib/kiwi.js') : window.kiwi;
 
 var logElement;
 function log(message) {
