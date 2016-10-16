@@ -1,6 +1,0 @@
-include MANIFEST.in
-include COPYING.txt
-include README.rst
-include releasenotes.rst
-recursive-include kiwi *.h
-recursive-include py *.cpp *.h

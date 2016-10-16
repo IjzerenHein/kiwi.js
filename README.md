@@ -18,11 +18,9 @@ about **8x faster** than [Cassowary.js](https://github.com/slightlyoff/cassowary
 
 ## Getting started
 
-Install using NPM or bowser:
+Install using NPM:
 
-	npm install kiwi-solver
-
-	bower install kiwi-solver
+	npm install kiwi.js
 
 Include kiwi in your html and javascript file:
 
