@@ -2,11 +2,8 @@
 
 [![view on npm](http://img.shields.io/npm/v/kiwi.js.svg)](https://www.npmjs.org/package/kiwi.js)
 
-Kiwi is an efficient implementation of the Cassowary constraint solving
-algorithm, based on the seminal Cassowary paper.
-It is *not* a refactoring or port of the original C++ solver, but
-has been designed from the ground up to be lightweight and fast. Kiwi is
-about **8x faster** than [Cassowary.js](https://github.com/slightlyoff/cassowary.js).
+Kiwi.js is a fast TypeScript implementation of the Cassowary constraint solving algorithm, based on the seminal Cassowary paper.
+Originally created by Chris Colbert, it was redesigned from the ground up to be lightweight, fast and easy to maintain. View the [benchmarks](#benchmarks) to see how it compares to [Cassowary.js](https://github.com/slightlyoff/cassowary.js).
 
 
 ## Index
