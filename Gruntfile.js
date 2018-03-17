@@ -22,6 +22,10 @@ module.exports = function(grunt) {
             pattern: /\(function\s\(kiwi\)\s{/ig,
             replacement: ''
           }, {
+            pattern: /}\)\(Operator\s=\skiwi\.Operator\s\|\|\s\(kiwi\.Operator\s=\s{}\)\);/ig,
+            replacement: ''
+          }, {
+          }, {
             pattern: /}\)\(kiwi\s\|\|\s\(kiwi\s=\s{}\)\);/ig,
             replacement: ''
           }, {
@@ -54,7 +58,7 @@ module.exports = function(grunt) {
       }
     },
     exec: {
-      build: 'tsc --noImplicitAny -m commonjs -d -out lib/kiwi.js src/kiwi.ts',
+      build: 'node_modules/.bin/tsc --noImplicitAny -m amd -d -out lib/kiwi.js src/kiwi.ts',
       test: 'mocha', // --compilers ts:typescript-require' // HR: can't get internal TS modules to work with typescript-require
       bench: 'node bench/main.js'
     },
