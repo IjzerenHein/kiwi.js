@@ -7,6 +7,7 @@ It is *not* a refactoring or port of the original C++ solver, but
 has been designed from the ground up to be lightweight and fast.
 
 **Example**
+
 ```javascript
 var kiwi = require('kiwi');
 
@@ -79,7 +80,7 @@ assert(centerX.value(), 250);
 <a name="module_kiwi..Constraint"></a>
 
 ### kiwi~Constraint
-**Kind**: inner class of <code>[kiwi](#module_kiwi)</code>  
+**Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
 
 * [~Constraint](#module_kiwi..Constraint)
     * [new Constraint(expression, operator, [rhs], [strength])](#new_module_kiwi..Constraint_new)
@@ -108,26 +109,26 @@ and a strength. The RHS of the equation is implicitly zero.
 #### constraint.expression() ⇒ <code>Expression</code>
 Returns the expression of the constraint.
 
-**Kind**: instance method of <code>[Constraint](#module_kiwi..Constraint)</code>  
+**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
 **Returns**: <code>Expression</code> - expression  
 <a name="module_kiwi..Constraint+op"></a>
 
 #### constraint.op() ⇒ <code>Operator</code>
 Returns the relational operator of the constraint.
 
-**Kind**: instance method of <code>[Constraint](#module_kiwi..Constraint)</code>  
+**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
 **Returns**: <code>Operator</code> - linear constraint operator  
 <a name="module_kiwi..Constraint+strength"></a>
 
 #### constraint.strength() ⇒ <code>Number</code>
 Returns the strength of the constraint.
 
-**Kind**: instance method of <code>[Constraint](#module_kiwi..Constraint)</code>  
+**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
 **Returns**: <code>Number</code> - strength  
 <a name="module_kiwi..Variable"></a>
 
 ### kiwi~Variable
-**Kind**: inner class of <code>[kiwi](#module_kiwi)</code>  
+**Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
 
 * [~Variable](#module_kiwi..Variable)
     * [new Variable([name])](#new_module_kiwi..Variable_new)
@@ -154,14 +155,14 @@ The primary user constraint variable.
 #### variable.name() ⇒ <code>String</code>
 Returns the name of the variable.
 
-**Kind**: instance method of <code>[Variable](#module_kiwi..Variable)</code>  
+**Kind**: instance method of [<code>Variable</code>](#module_kiwi..Variable)  
 **Returns**: <code>String</code> - name of the variable  
 <a name="module_kiwi..Variable+setName"></a>
 
 #### variable.setName(name)
 Set the name of the variable.
 
-**Kind**: instance method of <code>[Variable](#module_kiwi..Variable)</code>  
+**Kind**: instance method of [<code>Variable</code>](#module_kiwi..Variable)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -172,7 +173,7 @@ Set the name of the variable.
 #### variable.value() ⇒ <code>Number</code>
 Returns the value of the variable.
 
-**Kind**: instance method of <code>[Variable](#module_kiwi..Variable)</code>  
+**Kind**: instance method of [<code>Variable</code>](#module_kiwi..Variable)  
 **Returns**: <code>Number</code> - Calculated value  
 <a name="module_kiwi..Variable+plus"></a>
 
@@ -180,12 +181,12 @@ Returns the value of the variable.
 Creates a new Expression by adding a number, variable or expression
 to the variable.
 
-**Kind**: instance method of <code>[Variable](#module_kiwi..Variable)</code>  
+**Kind**: instance method of [<code>Variable</code>](#module_kiwi..Variable)  
 **Returns**: <code>Expression</code> - expression  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| value | <code>Number</code> &#124; <code>Variable</code> &#124; <code>Expression</code> | Value to add. |
+| value | <code>Number</code> \| <code>Variable</code> \| <code>Expression</code> | Value to add. |
 
 <a name="module_kiwi..Variable+minus"></a>
 
@@ -193,19 +194,19 @@ to the variable.
 Creates a new Expression by substracting a number, variable or expression
 from the variable.
 
-**Kind**: instance method of <code>[Variable](#module_kiwi..Variable)</code>  
+**Kind**: instance method of [<code>Variable</code>](#module_kiwi..Variable)  
 **Returns**: <code>Expression</code> - expression  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| value | <code>Number</code> &#124; <code>Variable</code> &#124; <code>Expression</code> | Value to substract. |
+| value | <code>Number</code> \| <code>Variable</code> \| <code>Expression</code> | Value to substract. |
 
 <a name="module_kiwi..Variable+multiply"></a>
 
 #### variable.multiply(coefficient) ⇒ <code>Expression</code>
 Creates a new Expression by multiplying with a fixed number.
 
-**Kind**: instance method of <code>[Variable](#module_kiwi..Variable)</code>  
+**Kind**: instance method of [<code>Variable</code>](#module_kiwi..Variable)  
 **Returns**: <code>Expression</code> - expression  
 
 | Param | Type | Description |
@@ -217,7 +218,7 @@ Creates a new Expression by multiplying with a fixed number.
 #### variable.divide(coefficient) ⇒ <code>Expression</code>
 Creates a new Expression by dividing with a fixed number.
 
-**Kind**: instance method of <code>[Variable](#module_kiwi..Variable)</code>  
+**Kind**: instance method of [<code>Variable</code>](#module_kiwi..Variable)  
 **Returns**: <code>Expression</code> - expression  
 
 | Param | Type | Description |
@@ -227,7 +228,7 @@ Creates a new Expression by dividing with a fixed number.
 <a name="module_kiwi..Expression"></a>
 
 ### kiwi~Expression
-**Kind**: inner class of <code>[kiwi](#module_kiwi)</code>  
+**Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
 
 * [~Expression](#module_kiwi..Expression)
     * [new Expression(...args)](#new_module_kiwi..Expression_new)
@@ -253,7 +254,7 @@ The parameters are summed. The tuples are multiplied.
 
 | Param | Type |
 | --- | --- |
-| ...args | <code>number</code> &#124; <code>Variable</code> &#124; <code>Expression</code> &#124; <code>Array</code> | 
+| ...args | <code>number</code> \| <code>Variable</code> \| <code>Expression</code> \| <code>Array</code> | 
 
 <a name="module_kiwi..Expression+plus"></a>
 
@@ -261,12 +262,12 @@ The parameters are summed. The tuples are multiplied.
 Creates a new Expression by adding a number, variable or expression
 to the expression.
 
-**Kind**: instance method of <code>[Expression](#module_kiwi..Expression)</code>  
+**Kind**: instance method of [<code>Expression</code>](#module_kiwi..Expression)  
 **Returns**: <code>Expression</code> - expression  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| value | <code>Number</code> &#124; <code>Variable</code> &#124; <code>Expression</code> | Value to add. |
+| value | <code>Number</code> \| <code>Variable</code> \| <code>Expression</code> | Value to add. |
 
 <a name="module_kiwi..Expression+minus"></a>
 
@@ -274,19 +275,19 @@ to the expression.
 Creates a new Expression by substracting a number, variable or expression
 from the expression.
 
-**Kind**: instance method of <code>[Expression](#module_kiwi..Expression)</code>  
+**Kind**: instance method of [<code>Expression</code>](#module_kiwi..Expression)  
 **Returns**: <code>Expression</code> - expression  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| value | <code>Number</code> &#124; <code>Variable</code> &#124; <code>Expression</code> | Value to substract. |
+| value | <code>Number</code> \| <code>Variable</code> \| <code>Expression</code> | Value to substract. |
 
 <a name="module_kiwi..Expression+multiply"></a>
 
 #### expression.multiply(coefficient) ⇒ <code>Expression</code>
 Creates a new Expression by multiplying with a fixed number.
 
-**Kind**: instance method of <code>[Expression](#module_kiwi..Expression)</code>  
+**Kind**: instance method of [<code>Expression</code>](#module_kiwi..Expression)  
 **Returns**: <code>Expression</code> - expression  
 
 | Param | Type | Description |
@@ -298,7 +299,7 @@ Creates a new Expression by multiplying with a fixed number.
 #### expression.divide(coefficient) ⇒ <code>Expression</code>
 Creates a new Expression by dividing with a fixed number.
 
-**Kind**: instance method of <code>[Expression](#module_kiwi..Expression)</code>  
+**Kind**: instance method of [<code>Expression</code>](#module_kiwi..Expression)  
 **Returns**: <code>Expression</code> - expression  
 
 | Param | Type | Description |
@@ -308,7 +309,7 @@ Creates a new Expression by dividing with a fixed number.
 <a name="module_kiwi..Strength"></a>
 
 ### kiwi~Strength
-**Kind**: inner class of <code>[kiwi](#module_kiwi)</code>  
+**Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
 
 * [~Strength](#module_kiwi..Strength)
     * [.required](#module_kiwi..Strength.required)
@@ -322,31 +323,31 @@ Creates a new Expression by dividing with a fixed number.
 #### Strength.required
 The 'required' symbolic strength.
 
-**Kind**: static property of <code>[Strength](#module_kiwi..Strength)</code>  
+**Kind**: static property of [<code>Strength</code>](#module_kiwi..Strength)  
 <a name="module_kiwi..Strength.strong"></a>
 
 #### Strength.strong
 The 'strong' symbolic strength.
 
-**Kind**: static property of <code>[Strength](#module_kiwi..Strength)</code>  
+**Kind**: static property of [<code>Strength</code>](#module_kiwi..Strength)  
 <a name="module_kiwi..Strength.medium"></a>
 
 #### Strength.medium
 The 'medium' symbolic strength.
 
-**Kind**: static property of <code>[Strength](#module_kiwi..Strength)</code>  
+**Kind**: static property of [<code>Strength</code>](#module_kiwi..Strength)  
 <a name="module_kiwi..Strength.weak"></a>
 
 #### Strength.weak
 The 'weak' symbolic strength.
 
-**Kind**: static property of <code>[Strength](#module_kiwi..Strength)</code>  
+**Kind**: static property of [<code>Strength</code>](#module_kiwi..Strength)  
 <a name="module_kiwi..Strength.create"></a>
 
 #### Strength.create(a, b, c, [w]) ⇒ <code>Number</code>
 Create a new symbolic strength.
 
-**Kind**: static method of <code>[Strength](#module_kiwi..Strength)</code>  
+**Kind**: static method of [<code>Strength</code>](#module_kiwi..Strength)  
 **Returns**: <code>Number</code> - strength  
 
 | Param | Type | Description |
@@ -359,7 +360,7 @@ Create a new symbolic strength.
 <a name="module_kiwi..Solver"></a>
 
 ### kiwi~Solver
-**Kind**: inner class of <code>[kiwi](#module_kiwi)</code>  
+**Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
 
 * [~Solver](#module_kiwi..Solver)
     * [new Solver()](#new_module_kiwi..Solver_new)
@@ -383,13 +384,13 @@ The constraint solver class.
 #### solver.createConstraint(lhs, operator, rhs, [strength])
 Creates and add a constraint to the solver.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| lhs | <code>Expression</code> &#124; <code>Variable</code> |  | Left hand side of the expression |
+| lhs | <code>Expression</code> \| <code>Variable</code> |  | Left hand side of the expression |
 | operator | <code>Operator</code> |  | Operator |
-| rhs | <code>Expression</code> &#124; <code>Variable</code> &#124; <code>Number</code> |  | Right hand side of the expression |
+| rhs | <code>Expression</code> \| <code>Variable</code> \| <code>Number</code> |  | Right hand side of the expression |
 | [strength] | <code>Number</code> | <code>Strength.required</code> | Strength |
 
 <a name="module_kiwi..Solver+addConstraint"></a>
@@ -397,7 +398,7 @@ Creates and add a constraint to the solver.
 #### solver.addConstraint(constraint)
 Add a constraint to the solver.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -408,7 +409,7 @@ Add a constraint to the solver.
 #### solver.removeConstraint(constraint)
 Remove a constraint from the solver.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -419,7 +420,7 @@ Remove a constraint from the solver.
 #### solver.hasConstraint(constraint) ⇒ <code>Bool</code>
 Test whether the solver contains the constraint.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 **Returns**: <code>Bool</code> - true or false  
 
 | Param | Type | Description |
@@ -431,7 +432,7 @@ Test whether the solver contains the constraint.
 #### solver.addEditVariable(variable, strength)
 Add an edit variable to the solver.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -443,7 +444,7 @@ Add an edit variable to the solver.
 #### solver.removeEditVariable(variable)
 Remove an edit variable from the solver.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -454,7 +455,7 @@ Remove an edit variable from the solver.
 #### solver.hasEditVariable(variable) ⇒ <code>Bool</code>
 Test whether the solver contains the edit variable.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 **Returns**: <code>Bool</code> - true or false  
 
 | Param | Type | Description |
@@ -466,7 +467,7 @@ Test whether the solver contains the edit variable.
 #### solver.suggestValue(variable, value)
 Suggest the value of an edit variable.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -478,7 +479,7 @@ Suggest the value of an edit variable.
 #### solver.updateVariables()
 Update the values of the variables.
 
-**Kind**: instance method of <code>[Solver](#module_kiwi..Solver)</code>  
+**Kind**: instance method of [<code>Solver</code>](#module_kiwi..Solver)  
 <a name="module_kiwi..Operator"></a>
 
 ### kiwi~Operator : <code>enum</code>
@@ -490,4 +491,4 @@ An enum defining the linear constraint operators.
 |`Ge`|>=|Greater than equal|
 |`Eq`|==|Equal|
 
-**Kind**: inner enum of <code>[kiwi](#module_kiwi)</code>  
+**Kind**: inner enum of [<code>kiwi</code>](#module_kiwi)  
