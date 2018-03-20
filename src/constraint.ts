@@ -45,8 +45,7 @@
  * ##API Documentation
  * @module kiwi
  */
-module kiwi
-{
+namespace kiwi {
     /**
      * An enum defining the linear constraint operators.
      *
@@ -59,13 +58,11 @@ module kiwi
      * @enum {Number}
      */
     export
-    enum Operator
-    {
+    enum Operator {
         Le,  // <=
         Ge,  // >=
-        Eq   // ==
+        Eq,   // ==
     }
-
 
     /**
      * A linear constraint equation.
@@ -80,8 +77,7 @@ module kiwi
      * @param {Number} [strength=Strength.required] The strength of the constraint.
      */
     export
-    class Constraint
-    {
+    class Constraint {
         constructor(
             expression: Expression|Variable,
             operator: Operator,
@@ -91,8 +87,7 @@ module kiwi
             this._strength = Strength.clip(strength);
             if ((rhs === undefined) && (expression instanceof Expression)) {
                 this._expression = expression;
-            }
-            else {
+            } else {
                 this._expression = expression.minus(rhs);
             }
         }
@@ -101,17 +96,15 @@ module kiwi
          * A static constraint comparison function.
          * @private
          */
-        static Compare( a: Constraint, b: Constraint ): number
-        {
+        public static Compare( a: Constraint, b: Constraint ): number {
             return a.id() - b.id();
         }
- 
+
         /**
          * Returns the unique id number of the constraint.
          * @private
          */
-        id(): number
-        {
+        public id(): number {
             return this._id;
         }
 
@@ -120,8 +113,7 @@ module kiwi
          *
          * @return {Expression} expression
          */
-        expression(): Expression
-        {
+        public expression(): Expression {
             return this._expression;
         }
 
@@ -130,8 +122,7 @@ module kiwi
          *
          * @return {Operator} linear constraint operator
          */
-        op(): Operator
-        {
+        public op(): Operator {
             return this._operator;
         }
 
@@ -140,13 +131,11 @@ module kiwi
          *
          * @return {Number} strength
          */
-        strength(): number
-        {
+        public strength(): number {
             return this._strength;
         }
 
-        toString(): string
-        {
+        public toString(): string {
             return this._expression.toString() + " " + ["<=", ">=", "="][this._operator] + " 0 (" + this._strength.toString() + ")";
         }
 
@@ -156,11 +145,10 @@ module kiwi
         private _id: number = CnId++;
     }
 
-
     /**
      * The internal constraint id counter.
      * @private
      */
-    var CnId = 0;
+    let CnId = 0;
 
 }

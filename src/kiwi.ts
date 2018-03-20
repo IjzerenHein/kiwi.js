@@ -13,4 +13,4 @@
 /// <reference path="strength.ts"/>
 /// <reference path="variable.ts"/>
 
-module kiwi { }
+namespace kiwi { }

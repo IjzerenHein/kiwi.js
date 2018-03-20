@@ -5,8 +5,7 @@
 |
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
-module kiwi
-{
+namespace kiwi {
 
     /**
      * The primary user constraint variable.
@@ -15,8 +14,7 @@ module kiwi
      * @param {String} [name=""] The name to associated with the variable.
      */
     export
-    class Variable
-    {
+    class Variable {
         constructor(name: string = "") {
             this._name = name;
         }
@@ -25,8 +23,7 @@ module kiwi
          * A static variable comparison function.
          * @private
          */
-        static Compare( a: Variable, b: Variable ): number
-        {
+        public static Compare( a: Variable, b: Variable ): number {
             return a.id() - b.id();
         }
 
@@ -34,8 +31,7 @@ module kiwi
          * Returns the unique id number of the variable.
          * @private
          */
-        id(): number
-        {
+        public id(): number {
             return this._id;
         }
 
@@ -44,8 +40,7 @@ module kiwi
          *
          * @return {String} name of the variable
          */
-        name(): string
-        {
+        public name(): string {
             return this._name;
         }
 
@@ -54,8 +49,7 @@ module kiwi
          *
          * @param {String} name Name of the variable
          */
-        setName( name: string ): void
-        {
+        public setName( name: string ): void {
             this._name = name;
         }
 
@@ -63,8 +57,7 @@ module kiwi
          * Returns the user context object of the variable.
          * @private
          */
-        context(): any
-        {
+        public context(): any {
             return this._context;
         }
 
@@ -72,8 +65,7 @@ module kiwi
          * Set the user context object of the variable.
          * @private
          */
-        setContext( context: any ): void
-        {
+        public setContext( context: any ): void {
             this._context = context;
         }
 
@@ -82,8 +74,7 @@ module kiwi
          *
          * @return {Number} Calculated value
          */
-        value(): number
-        {
+        public value(): number {
             return this._value;
         }
 
@@ -91,8 +82,7 @@ module kiwi
          * Set the value of the variable.
          * @private
          */
-        setValue( value: number ): void
-        {
+        public setValue( value: number ): void {
             this._value = value;
         }
 
@@ -103,8 +93,7 @@ module kiwi
          * @param {Number|Variable|Expression} value Value to add.
          * @return {Expression} expression
          */
-        plus( value: number|Variable|Expression ): Expression
-        {
+        public plus( value: number|Variable|Expression ): Expression {
             return new Expression(this, value);
         }
 
@@ -115,9 +104,8 @@ module kiwi
          * @param {Number|Variable|Expression} value Value to substract.
          * @return {Expression} expression
          */
-        minus( value: number|Variable|Expression ): Expression
-        {
-            return new Expression(this, typeof value === 'number' ? -value : [-1, value]);
+        public minus( value: number|Variable|Expression ): Expression {
+            return new Expression(this, typeof value === "number" ? -value : [-1, value]);
         }
 
         /**
@@ -126,8 +114,7 @@ module kiwi
          * @param {Number} coefficient Coefficient to multiply with.
          * @return {Expression} expression
          */
-        multiply( coefficient: number ): Expression
-        {
+        public multiply( coefficient: number ): Expression {
             return new Expression([coefficient, this]);
         }
 
@@ -137,8 +124,7 @@ module kiwi
          * @param {Number} coefficient Coefficient to divide by.
          * @return {Expression} expression
          */
-        divide( coefficient: number ): Expression
-        {
+        public divide( coefficient: number ): Expression {
             return new Expression([1 / coefficient, this]);
         }
 
@@ -146,16 +132,14 @@ module kiwi
          * Returns the JSON representation of the variable.
          * @private
          */
-        toJSON(): any
-        {
+        public toJSON(): any {
             return {
                 name: this._name,
-                value: this._value
+                value: this._value,
             };
         }
-        
-        toString(): string
-        {
+
+        public toString(): string {
             return this._context + "[" + this._name + ":" + this._value + "]";
         }
 
@@ -165,11 +149,10 @@ module kiwi
         private _id: number = VarId++;
     }
 
-
     /**
      * The internal variable id counter.
      * @private
      */
-    var VarId = 0;
+    let VarId = 0;
 
 }

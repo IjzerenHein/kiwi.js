@@ -10,8 +10,7 @@
 /// <reference path="maptype.ts"/>
 /// <reference path="variable.ts"/>
 
-module kiwi
-{
+namespace kiwi {
 
     /**
      * An expression of variable terms and a constant.
@@ -29,12 +28,10 @@ module kiwi
      * @param {...(number|Variable|Expression|Array)} args
      */
     export
-    class Expression
-    {
+    class Expression {
         constructor( ...args: any[] );
-        constructor()
-        {
-            var parsed = parseArgs( arguments );
+        constructor() {
+            let parsed = parseArgs( arguments );
             this._terms = parsed.terms;
             this._constant = parsed.constant;
         }
@@ -45,8 +42,7 @@ module kiwi
          * This *must* be treated as const.
          * @private
          */
-        terms(): IMap<Variable, number>
-        {
+        public terms(): IMap<Variable, number> {
             return this._terms;
         }
 
@@ -54,8 +50,7 @@ module kiwi
          * Returns the constant of the expression.
          * @private
          */
-        constant(): number
-        {
+        public constant(): number {
             return this._constant;
         }
 
@@ -65,12 +60,10 @@ module kiwi
          * @private
          * @return {Number} computed value of the expression
          */
-        value(): number
-        {
-            var result = this._constant;
-            for( var i = 0, n = this._terms.size(); i < n; i++ )
-            {
-                var pair = this._terms.itemAt(i);
+        public value(): number {
+            let result = this._constant;
+            for ( let i = 0, n = this._terms.size(); i < n; i++ ) {
+                let pair = this._terms.itemAt(i);
                 result += pair.first.value() * pair.second;
             }
             return result;
@@ -83,8 +76,7 @@ module kiwi
          * @param {Number|Variable|Expression} value Value to add.
          * @return {Expression} expression
          */
-        plus( value: number|Variable|Expression ): Expression
-        {
+        public plus( value: number|Variable|Expression ): Expression {
             return new Expression(this, value);
         }
 
@@ -95,8 +87,8 @@ module kiwi
          * @param {Number|Variable|Expression} value Value to substract.
          * @return {Expression} expression
          */
-        minus( value: number|Variable|Expression ): Expression {
-            return new Expression(this, typeof value === 'number' ? -value : [-1, value]);
+        public minus( value: number|Variable|Expression ): Expression {
+            return new Expression(this, typeof value === "number" ? -value : [-1, value]);
         }
 
         /**
@@ -105,8 +97,7 @@ module kiwi
          * @param {Number} coefficient Coefficient to multiply with.
          * @return {Expression} expression
          */
-        multiply( coefficient: number ): Expression
-        {
+        public multiply( coefficient: number ): Expression {
             return new Expression([coefficient, this]);
         }
 
@@ -116,110 +107,87 @@ module kiwi
          * @param {Number} coefficient Coefficient to divide by.
          * @return {Expression} expression
          */
-        divide( coefficient: number ): Expression
-        {
+        public divide( coefficient: number ): Expression {
             return new Expression([1 / coefficient, this]);
         }
 
-        isConstant(): boolean
-        {
+        public isConstant(): boolean {
             return this._terms.size() == 0;
         }
-        
-        toString(): string
-        {
-            var result = this._terms._array.map(function(pair, idx)
-            {
+
+        public toString(): string {
+            let result = this._terms._array.map(function(pair, idx) {
                 return (pair.second + "*" + pair.first.toString());
             }).join(" + ");
-                    
-            if (!this.isConstant() && this._constant !== 0)
-            {
+
+            if (!this.isConstant() && this._constant !== 0) {
                 result += " + ";
             }
-                    
+
             result += this._constant;
-                    
+
             return result;
         }
-        
+
         private _terms: IMap<Variable, number>;
         private _constant: number;
     }
 
-
     /**
      * An internal interface for the argument parse results.
      */
-    interface IParseResult
-    {
+    interface IParseResult {
         terms: IMap<Variable, number>;
         constant: number;
     }
-
 
     /**
      * An internal argument parsing function.
      * @private
      */
-    function parseArgs( args: IArguments ): IParseResult
-    {
-        var constant = 0.0;
-        var factory = () => 0.0;
-        var terms = createMap<Variable, number>( Variable.Compare );
-        for( var i = 0, n = args.length; i < n; ++i )
-        {
-            var item = args[ i ];
-            if( typeof item === "number" )
-            {
+    function parseArgs( args: IArguments ): IParseResult {
+        let constant = 0.0;
+        let factory = () => 0.0;
+        let terms = createMap<Variable, number>( Variable.Compare );
+        for ( let i = 0, n = args.length; i < n; ++i ) {
+            let item = args[ i ];
+            if ( typeof item === "number" ) {
                 constant += item;
-            }
-            else if( item instanceof Variable )
-            {
+            } else if ( item instanceof Variable ) {
                 terms.setDefault( item, factory ).second += 1.0;
-            }
-            else if (item instanceof Expression)
-            {
+            } else if (item instanceof Expression) {
                 constant += item.constant();
-                var terms2 = item.terms();
-                for (var j = 0, k = terms2.size(); j < k; j++) {
-                    var termPair = terms2.itemAt(j);
+                let terms2 = item.terms();
+                for (let j = 0, k = terms2.size(); j < k; j++) {
+                    let termPair = terms2.itemAt(j);
                     terms.setDefault(termPair.first, factory).second += termPair.second;
                 }
-            }
-            else if( item instanceof Array )
-            {
-                if( item.length !== 2 )
-                {
+            } else if ( item instanceof Array ) {
+                if ( item.length !== 2 ) {
                     throw new Error( "array must have length 2" );
                 }
-                var value: number = item[ 0 ];
-                var value2 = item[ 1 ];
-                if( typeof value !== "number" )
-                {
+                let value: number = item[ 0 ];
+                let value2 = item[ 1 ];
+                if ( typeof value !== "number" ) {
                     throw new Error( "array item 0 must be a number" );
                 }
                 if (value2 instanceof Variable) {
                     terms.setDefault(value2, factory).second += value;
-                }
-                else if (value2 instanceof Expression) {
+                } else if (value2 instanceof Expression) {
                     constant += (value2.constant() * value);
-                    var terms2 = value2.terms();
-                    for (var j = 0, k = terms2.size(); j < k; j++) {
-                        var termPair = terms2.itemAt(j);
+                    let terms2 = value2.terms();
+                    for (let j = 0, k = terms2.size(); j < k; j++) {
+                        let termPair = terms2.itemAt(j);
                         terms.setDefault(termPair.first, factory).second += (termPair.second * value);
                     }
-                }
-                else {
+                } else {
                     throw new Error("array item 1 must be a variable or expression");
                 }
-            }
-            else
-            {
+            } else {
                 throw new Error( "invalid Expression argument: " + item );
             }
         }
-        return { terms: terms, constant: constant };
+        return { terms, constant };
     }
 
 }

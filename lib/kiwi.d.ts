@@ -35,7 +35,7 @@
  * ##API Documentation
  * @module kiwi
  */
-declare module kiwi {
+declare namespace kiwi {
     /**
      * An enum defining the linear constraint operators.
      *
@@ -101,12 +101,12 @@ declare module kiwi {
         private _id;
     }
 }
-declare module kiwi {
+declare namespace kiwi {
     interface IMap<T, U> extends tsu.AssociativeArray<T, U> {
     }
     function createMap<T, U>(compare: tsu.ICompare<T, T>): IMap<T, U>;
 }
-declare module kiwi {
+declare namespace kiwi {
     /**
      * The primary user constraint variable.
      *
@@ -200,7 +200,7 @@ declare module kiwi {
         private _id;
     }
 }
-declare module kiwi {
+declare namespace kiwi {
     /**
      * An expression of variable terms and a constant.
      *
@@ -273,11 +273,11 @@ declare module kiwi {
         private _constant;
     }
 }
-declare module kiwi {
+declare namespace kiwi {
     /**
      * @class Strength
      */
-    module Strength {
+    namespace Strength {
         /**
          * Create a new symbolic strength.
          *
@@ -291,19 +291,19 @@ declare module kiwi {
         /**
          * The 'required' symbolic strength.
          */
-        var required: number;
+        let required: number;
         /**
          * The 'strong' symbolic strength.
          */
-        var strong: number;
+        let strong: number;
         /**
          * The 'medium' symbolic strength.
          */
-        var medium: number;
+        let medium: number;
         /**
          * The 'weak' symbolic strength.
          */
-        var weak: number;
+        let weak: number;
         /**
          * Clip a symbolic strength to the allowed min and max.
          * @private
@@ -311,7 +311,7 @@ declare module kiwi {
         function clip(value: number): number;
     }
 }
-declare module kiwi {
+declare namespace kiwi {
     /**
      * The constraint solver class.
      *
@@ -552,5 +552,5 @@ declare module kiwi {
         private _idTick;
     }
 }
-declare module kiwi {
+declare namespace kiwi {
 }
