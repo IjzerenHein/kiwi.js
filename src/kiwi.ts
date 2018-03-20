@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
-| Copyright (c) 2014, Nucleic Development Team.
+| Copyright (c) 2014-2018, Nucleic Development Team & H. Rutjes.
 |
 | Distributed under the terms of the Modified BSD License.
 |

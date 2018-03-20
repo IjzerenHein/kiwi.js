@@ -16,6 +16,7 @@
  * has been designed from the ground up to be lightweight and fast.
  *
  * **Example**
+ *
  * ```javascript
  * var kiwi = require('kiwi');
  *

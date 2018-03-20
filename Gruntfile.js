@@ -88,7 +88,7 @@ module.exports = function(grunt) {
           position: 'top',
           banner:
             '/*-----------------------------------------------------------------------------\n' +
-            '| Copyright (c) 2014-2016, Nucleic Development Team & H. Rutjes.\n' +
+            '| Copyright (c) 2014-2018, Nucleic Development Team & H. Rutjes.\n' +
             '|\n' +
             '| Distributed under the terms of the Modified BSD License.\n' +
             '|\n' +
