@@ -82,7 +82,7 @@ namespace kiwi {
         constructor(
             expression: Expression|Variable,
             operator: Operator,
-            rhs: Expression|Variable|number,
+            rhs?: Expression|Variable|number,
             strength: number = Strength.required) {
             this._operator = operator;
             this._strength = Strength.clip(strength);
