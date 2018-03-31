@@ -83,7 +83,7 @@ namespace kiwi {
             expression: Expression|Variable,
             operator: Operator,
             rhs?: Expression|Variable|number,
-            strength?: number = Strength.required) {
+            strength: number = Strength.required) {
             this._operator = operator;
             this._strength = Strength.clip(strength);
             if ((rhs === undefined) && (expression instanceof Expression)) {
