@@ -58,9 +58,7 @@ module.exports = function(grunt) {
       }
     },
     exec: {
-      build: 'node_modules/.bin/tsc --noImplicitAny -m amd -d -out lib/kiwi.js src/kiwi.ts',
-      test: 'mocha', // --compilers ts:typescript-require' // HR: can't get internal TS modules to work with typescript-require
-      bench: 'node bench/main.js'
+      build: 'node_modules/.bin/tsc --noImplicitAny -m amd -d -out lib/kiwi.js src/kiwi.ts'
     },
     concat: {
       extras: {
@@ -115,9 +113,6 @@ module.exports = function(grunt) {
   // Tasks
   grunt.registerTask('lint', ['tslint']);
   grunt.registerTask('doc', ['string-replace', 'jsdoc2md']);
-  grunt.registerTask('build', ['exec:build', 'doc', 'concat', 'umd']);
-  grunt.registerTask('test', ['build', 'exec:test']);
-  grunt.registerTask('bench', ['build', 'exec:bench']);
+  grunt.registerTask('build', ['exec:build', 'doc', 'concat', 'umd', 'minify']);
   grunt.registerTask('minify', ['uglify', 'usebanner']);
-  grunt.registerTask('default', ['build', 'lint', 'minify', 'exec:test']);
 };

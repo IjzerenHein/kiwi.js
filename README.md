@@ -2,6 +2,7 @@
 
 [![view on npm](http://img.shields.io/npm/v/kiwi.js.svg)](https://www.npmjs.org/package/kiwi.js)
 [![Build Status](https://travis-ci.org/IjzerenHein/kiwi.js.svg?branch=master)](https://travis-ci.org/IjzerenHein/kiwi.js)
+[![codecov](https://codecov.io/gh/IjzerenHein/kiwi.js/branch/master/graph/badge.svg)](https://codecov.io/gh/IjzerenHein/kiwi.js)
 
 Kiwi.js is a fast TypeScript implementation of the Cassowary constraint solving algorithm, based on the seminal Cassowary paper.
 Originally created by Chris Colbert, it was redesigned from the ground up to be lightweight, fast and easy to maintain. View the [benchmarks](#benchmarks) to see how it compares to [Cassowary.js](https://github.com/slightlyoff/cassowary.js).
@@ -72,7 +73,7 @@ To run the benchmark in the browser, [just visit this page](https://rawgit.com/I
 To run the benchmark locally using nodejs, *clone or download this repository* and execute the following steps:
 
 	npm install
-	grunt bench
+	npm run bench
 
 
 ## Tests
@@ -82,7 +83,7 @@ To run the tests in the browser, [just visit this page](https://rawgit.com/Ijzer
 To run the tests locally using nodejs, *clone or download this repository* and execute the following steps:
 
 	npm install
-	grunt
+	npm run build && npm run test
 
 
 ## Contribute
