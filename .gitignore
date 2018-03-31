@@ -2,5 +2,6 @@ node_modules
 tmp/
 /coverage
 lib/kiwi.min.js
+lib/kiwi.d.ts
 
 yarn-error.log
