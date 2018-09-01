@@ -4,6 +4,8 @@
   "homepage": "https://github.com/IjzerenHein/kiwi.js",
   "repository": "https://github.com/IjzerenHein/kiwi.js",
   "main": "lib/kiwi.js",
+  "module": "es/kiwi.js",
+  "types": "es/kiwi.d.ts",
   "author": "Chris Colbert <sccolbert@gmail.com>",
   "contributors": {
     "name": "Hein Rutjes <IJzerenHein>"
