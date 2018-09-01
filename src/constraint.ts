@@ -7,7 +7,7 @@
 |----------------------------------------------------------------------------*/
 
 import { Expression } from "./expression";
-import * as Strength from "./strength";
+import { Strength } from "./strength";
 import { Variable } from "./variable";
 
 /**

@@ -9,7 +9,7 @@
 import { Constraint, Operator } from "./constraint";
 import { Expression } from "./expression";
 import { createMap, IMap } from "./maptype";
-import * as Strength from "./strength";
+import { Strength } from "./strength";
 import { Variable } from "./variable";
 
 /**

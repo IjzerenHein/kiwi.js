@@ -10,6 +10,5 @@ export * from "./constraint";
 export * from "./expression";
 export * from "./maptype";
 export * from "./solver";
-import * as Stength from "./strength";
-export { Stength };
+export * from "./strength";
 export * from "./variable";
