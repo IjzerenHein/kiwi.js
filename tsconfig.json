@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "module": "es2015",
+        //"strict": true, // aah: currently fails to build in strict mode, as previous build only specified noImplicitAny
+        "noImplicitAny": true,
+        "outDir": "es",
+        "declaration": true
+    },
+    "include": [ "src/*.ts" ]
+}
