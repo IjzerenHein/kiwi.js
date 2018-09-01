@@ -544,9 +544,3 @@ var tsu;
 |
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
-/// <reference path="algorithm.ts"/>
-/// <reference path="array_base.ts"/>
-/// <reference path="associative_array.ts"/>
-/// <reference path="iterator.ts"/>
-/// <reference path="unique_array.ts"/>
-/// <reference path="utility.ts"/>

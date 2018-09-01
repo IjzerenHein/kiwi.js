@@ -286,3 +286,4 @@ declare module tsu {
 }
 declare module tsu {
 }
+export = tsu;
