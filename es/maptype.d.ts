@@ -8,17 +8,17 @@ export declare function createMap<T extends {
 declare class IndexedMap<T extends {
     id(): number;
 }, U> {
-    _index: {
+    index: {
         [id: number]: number;
     };
-    _array: Pair<T, U>[];
+    array: Pair<T, U>[];
     /**
      * Returns the number of items in the array.
      */
     size(): number;
     /**
-    * Returns true if the array is empty.
-    */
+     * Returns true if the array is empty.
+     */
     empty(): boolean;
     /**
      * Returns the item at the given array index.
@@ -27,10 +27,10 @@ declare class IndexedMap<T extends {
      */
     itemAt(index: number): Pair<T, U>;
     /**
-    * Returns true if the key is in the array, false otherwise.
-    *
-    * @param key The key to locate in the array.
-    */
+     * Returns true if the key is in the array, false otherwise.
+     *
+     * @param key The key to locate in the array.
+     */
     contains(key: T): boolean;
     /**
      * Returns the pair associated with the given key, or undefined.
@@ -69,21 +69,22 @@ declare class IndexedMap<T extends {
     copy(): IndexedMap<T, U>;
 }
 /**
-* A class which defines a generic pair object.
-*/
+ * A class which defines a generic pair object.
+ * @private
+ */
 declare class Pair<T, U> {
     first: T;
     second: U;
     /**
-    * Construct a new Pair object.
-    *
-    * @param first The first item of the pair.
-    * @param second The second item of the pair.
-    */
+     * Construct a new Pair object.
+     *
+     * @param first The first item of the pair.
+     * @param second The second item of the pair.
+     */
     constructor(first: T, second: U);
     /**
-    * Create a copy of the pair.
-    */
+     * Create a copy of the pair.
+     */
     copy(): Pair<T, U>;
 }
 export {};

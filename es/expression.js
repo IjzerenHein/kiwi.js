@@ -100,7 +100,7 @@ var Expression = /** @class */ (function () {
         return this._terms.size() == 0;
     };
     Expression.prototype.toString = function () {
-        var result = this._terms._array.map(function (pair, idx) {
+        var result = this._terms.array.map(function (pair, idx) {
             return (pair.second + "*" + pair.first.toString());
         }).join(" + ");
         if (!this.isConstant() && this._constant !== 0) {
