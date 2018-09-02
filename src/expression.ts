@@ -113,7 +113,7 @@ class Expression {
     }
 
     public toString(): string {
-        let result = this._terms._array.map(function(pair, idx) {
+        let result = this._terms.array.map(function(pair, idx) {
             return (pair.second + "*" + pair.first.toString());
         }).join(" + ");
 
