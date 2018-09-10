@@ -20,27 +20,11 @@ Install using NPM:
 
 	npm install kiwi.js
 
-Include kiwi in your html and javascript file:
-
-```html
-<head>
-  <script type="text/javascript" src="node_modules/kiwi.js/lib/kiwi.js"></script>
-</head>
-```
-
-```javascript
-var kiwi = window.kiwi;
-```
-
-Or when using requirejs or a bundler like browserify or webpack, use:
-
-```javascript
-var kiwi = require('kiwi.js');
-```
-
 The following example creates a solver which automatically calculates the width:
 
 ```javascript
+import kiwi from 'kiwi.js';
+
 // Create a solver
 var solver = new kiwi.Solver();
 
