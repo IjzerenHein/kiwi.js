@@ -34,15 +34,10 @@ solver.updateVariables();
 assert(centerX.value(), 250);
 ```
 
-##API Documentation
+## API Documentation
 
 
 * [kiwi](#module_kiwi)
-    * [~Constraint](#module_kiwi..Constraint)
-        * [new Constraint(expression, operator, [rhs], [strength])](#new_module_kiwi..Constraint_new)
-        * [.expression()](#module_kiwi..Constraint+expression) ⇒ <code>Expression</code>
-        * [.op()](#module_kiwi..Constraint+op) ⇒ <code>Operator</code>
-        * [.strength()](#module_kiwi..Constraint+strength) ⇒ <code>Number</code>
     * [~Variable](#module_kiwi..Variable)
         * [new Variable([name])](#new_module_kiwi..Variable_new)
         * [.name()](#module_kiwi..Variable+name) ⇒ <code>String</code>
@@ -64,6 +59,11 @@ assert(centerX.value(), 250);
         * [.medium](#module_kiwi..Strength.medium)
         * [.weak](#module_kiwi..Strength.weak)
         * [.create(a, b, c, [w])](#module_kiwi..Strength.create) ⇒ <code>Number</code>
+    * [~Constraint](#module_kiwi..Constraint)
+        * [new Constraint(expression, operator, [rhs], [strength])](#new_module_kiwi..Constraint_new)
+        * [.expression()](#module_kiwi..Constraint+expression) ⇒ <code>Expression</code>
+        * [.op()](#module_kiwi..Constraint+op) ⇒ <code>Operator</code>
+        * [.strength()](#module_kiwi..Constraint+strength) ⇒ <code>Number</code>
     * [~Solver](#module_kiwi..Solver)
         * [new Solver()](#new_module_kiwi..Solver_new)
         * [.createConstraint(lhs, operator, rhs, [strength])](#module_kiwi..Solver+createConstraint)
@@ -77,57 +77,11 @@ assert(centerX.value(), 250);
         * [.updateVariables()](#module_kiwi..Solver+updateVariables)
     * [~Operator](#module_kiwi..Operator) : <code>enum</code>
 
-<a name="module_kiwi..Constraint"></a>
-
-### kiwi~Constraint
-**Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
-
-* [~Constraint](#module_kiwi..Constraint)
-    * [new Constraint(expression, operator, [rhs], [strength])](#new_module_kiwi..Constraint_new)
-    * [.expression()](#module_kiwi..Constraint+expression) ⇒ <code>Expression</code>
-    * [.op()](#module_kiwi..Constraint+op) ⇒ <code>Operator</code>
-    * [.strength()](#module_kiwi..Constraint+strength) ⇒ <code>Number</code>
-
-<a name="new_module_kiwi..Constraint_new"></a>
-
-#### new Constraint(expression, operator, [rhs], [strength])
-A linear constraint equation.
-
-A constraint equation is composed of an expression, an operator,
-and a strength. The RHS of the equation is implicitly zero.
-
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| expression | <code>Expression</code> |  | The constraint expression (LHS). |
-| operator | <code>Operator</code> |  | The equation operator. |
-| [rhs] | <code>Expression</code> |  | Right hand side of the expression. |
-| [strength] | <code>Number</code> | <code>Strength.required</code> | The strength of the constraint. |
-
-<a name="module_kiwi..Constraint+expression"></a>
-
-#### constraint.expression() ⇒ <code>Expression</code>
-Returns the expression of the constraint.
-
-**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
-**Returns**: <code>Expression</code> - expression  
-<a name="module_kiwi..Constraint+op"></a>
-
-#### constraint.op() ⇒ <code>Operator</code>
-Returns the relational operator of the constraint.
-
-**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
-**Returns**: <code>Operator</code> - linear constraint operator  
-<a name="module_kiwi..Constraint+strength"></a>
-
-#### constraint.strength() ⇒ <code>Number</code>
-Returns the strength of the constraint.
-
-**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
-**Returns**: <code>Number</code> - strength  
 <a name="module_kiwi..Variable"></a>
 
 ### kiwi~Variable
+The primary user constraint variable.
+
 **Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
 
 * [~Variable](#module_kiwi..Variable)
@@ -143,8 +97,6 @@ Returns the strength of the constraint.
 <a name="new_module_kiwi..Variable_new"></a>
 
 #### new Variable([name])
-The primary user constraint variable.
-
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -228,6 +180,17 @@ Creates a new Expression by dividing with a fixed number.
 <a name="module_kiwi..Expression"></a>
 
 ### kiwi~Expression
+An expression of variable terms and a constant.
+
+The constructor accepts an arbitrary number of parameters,
+each of which must be one of the following types:
+ - number
+ - Variable
+ - Expression
+ - 2-tuple of [number, Variable|Expression]
+
+The parameters are summed. The tuples are multiplied.
+
 **Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
 
 * [~Expression](#module_kiwi..Expression)
@@ -240,17 +203,6 @@ Creates a new Expression by dividing with a fixed number.
 <a name="new_module_kiwi..Expression_new"></a>
 
 #### new Expression(...args)
-An expression of variable terms and a constant.
-
-The constructor accepts an arbitrary number of parameters,
-each of which must be one of the following types:
- - number
- - Variable
- - Expression
- - 2-tuple of [number, Variable|Expression]
-
-The parameters are summed. The tuples are multiplied.
-
 
 | Param | Type |
 | --- | --- |
@@ -350,16 +302,66 @@ Create a new symbolic strength.
 **Kind**: static method of [<code>Strength</code>](#module_kiwi..Strength)  
 **Returns**: <code>Number</code> - strength  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| a | <code>Number</code> | strong |
-| b | <code>Number</code> | medium |
-| c | <code>Number</code> | weak |
-| [w] | <code>Number</code> | weight |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| a | <code>Number</code> |  | strong |
+| b | <code>Number</code> |  | medium |
+| c | <code>Number</code> |  | weak |
+| [w] | <code>Number</code> | <code>1</code> | weight |
 
+<a name="module_kiwi..Constraint"></a>
+
+### kiwi~Constraint
+A linear constraint equation.
+
+A constraint equation is composed of an expression, an operator,
+and a strength. The RHS of the equation is implicitly zero.
+
+**Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
+
+* [~Constraint](#module_kiwi..Constraint)
+    * [new Constraint(expression, operator, [rhs], [strength])](#new_module_kiwi..Constraint_new)
+    * [.expression()](#module_kiwi..Constraint+expression) ⇒ <code>Expression</code>
+    * [.op()](#module_kiwi..Constraint+op) ⇒ <code>Operator</code>
+    * [.strength()](#module_kiwi..Constraint+strength) ⇒ <code>Number</code>
+
+<a name="new_module_kiwi..Constraint_new"></a>
+
+#### new Constraint(expression, operator, [rhs], [strength])
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| expression | <code>Expression</code> |  | The constraint expression (LHS). |
+| operator | <code>Operator</code> |  | The equation operator. |
+| [rhs] | <code>Expression</code> |  | Right hand side of the expression. |
+| [strength] | <code>Number</code> | <code>Strength.required</code> | The strength of the constraint. |
+
+<a name="module_kiwi..Constraint+expression"></a>
+
+#### constraint.expression() ⇒ <code>Expression</code>
+Returns the expression of the constraint.
+
+**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
+**Returns**: <code>Expression</code> - expression  
+<a name="module_kiwi..Constraint+op"></a>
+
+#### constraint.op() ⇒ <code>Operator</code>
+Returns the relational operator of the constraint.
+
+**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
+**Returns**: <code>Operator</code> - linear constraint operator  
+<a name="module_kiwi..Constraint+strength"></a>
+
+#### constraint.strength() ⇒ <code>Number</code>
+Returns the strength of the constraint.
+
+**Kind**: instance method of [<code>Constraint</code>](#module_kiwi..Constraint)  
+**Returns**: <code>Number</code> - strength  
 <a name="module_kiwi..Solver"></a>
 
 ### kiwi~Solver
+The constraint solver class.
+
 **Kind**: inner class of [<code>kiwi</code>](#module_kiwi)  
 
 * [~Solver](#module_kiwi..Solver)
@@ -377,7 +379,7 @@ Create a new symbolic strength.
 <a name="new_module_kiwi..Solver_new"></a>
 
 #### new Solver()
-The constraint solver class.
+Construct a new Solver.
 
 <a name="module_kiwi..Solver+createConstraint"></a>
 

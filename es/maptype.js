@@ -5,60 +5,51 @@
 |
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
-
-export interface IMap<T extends { id(): number }, U> extends IndexedMap<T, U> { }
-
-export
-function createMap<T extends { id(): number }, U>( compare: any ): IMap<T, U> {
-    return new IndexedMap<T, U>();
+export function createMap(compare) {
+    return new IndexedMap();
 }
-
-class IndexedMap<T extends { id(): number }, U> {
-    public index = {} as { [ id: number ]: number | undefined };
-    public array = [] as Array<Pair<T, U>>;
-
+var IndexedMap = /** @class */ (function () {
+    function IndexedMap() {
+        this.index = {};
+        this.array = [];
+    }
     /**
      * Returns the number of items in the array.
      */
-    public size(): number {
+    IndexedMap.prototype.size = function () {
         return this.array.length;
-    }
-
+    };
     /**
      * Returns true if the array is empty.
      */
-    public empty(): boolean {
+    IndexedMap.prototype.empty = function () {
         return this.array.length === 0;
-    }
-
+    };
     /**
      * Returns the item at the given array index.
      *
      * @param index The integer index of the desired item.
      */
-    public itemAt(index: number): Pair<T, U> {
+    IndexedMap.prototype.itemAt = function (index) {
         return this.array[index];
-    }
-
+    };
     /**
      * Returns true if the key is in the array, false otherwise.
      *
      * @param key The key to locate in the array.
      */
-    public contains(key: T) {
+    IndexedMap.prototype.contains = function (key) {
         return this.index[key.id()] !== undefined;
-    }
-
+    };
     /**
      * Returns the pair associated with the given key, or undefined.
      *
      * @param key The key to locate in the array.
      */
-    public find(key: T) {
-        const i = this.index[key.id()];
+    IndexedMap.prototype.find = function (key) {
+        var i = this.index[key.id()];
         return i === undefined ? undefined : this.array[i];
-    }
-
+    };
     /**
      * Returns the pair associated with the key if it exists.
      *
@@ -68,18 +59,18 @@ class IndexedMap<T extends { id(): number }, U> {
      * @param key The key to locate in the array.
      * @param factory The function which creates the default value.
      */
-    public setDefault(key: T, factory: () => U): Pair<T, U> {
-        const i = this.index[key.id()];
+    IndexedMap.prototype.setDefault = function (key, factory) {
+        var i = this.index[key.id()];
         if (i === undefined) {
-            const pair = new Pair(key, factory());
+            var pair = new Pair(key, factory());
             this.index[key.id()] = this.array.length;
             this.array.push(pair);
             return pair;
-        } else {
+        }
+        else {
             return this.array[i];
         }
-    }
-
+    };
     /**
      * Insert the pair into the array and return the pair.
      *
@@ -88,68 +79,70 @@ class IndexedMap<T extends { id(): number }, U> {
      * @param key The key portion of the pair.
      * @param value The value portion of the pair.
      */
-    public insert(key: T, value: U): Pair<T, U> {
-        const pair = new Pair(key, value);
-        const i = this.index[key.id()];
+    IndexedMap.prototype.insert = function (key, value) {
+        var pair = new Pair(key, value);
+        var i = this.index[key.id()];
         if (i === undefined) {
             this.index[key.id()] = this.array.length;
             this.array.push(pair);
-        } else {
+        }
+        else {
             this.array[i] = pair;
         }
         return pair;
-    }
-
+    };
     /**
      * Removes and returns the pair for the given key, or undefined.
      *
      * @param key The key to remove from the map.
      */
-    public erase(key: T): Pair<T, U> {
-        const i = this.index[key.id()];
+    IndexedMap.prototype.erase = function (key) {
+        var i = this.index[key.id()];
         if (i === undefined) {
             return undefined;
         }
         this.index[key.id()] = undefined;
-        const pair = this.array[i];
-        const last = this.array.pop();
+        var pair = this.array[i];
+        var last = this.array.pop();
         if (pair !== last) {
             this.array[i] = last;
             this.index[last.first.id()] = i;
         }
         return pair;
-    }
-
+    };
     /**
      * Create a copy of this associative array.
      */
-    public copy(): IndexedMap<T, U> {
-        const copy = new IndexedMap<T, U>();
-        for (let i = 0; i < this.array.length; i++) {
-            const pair = this.array[i].copy();
+    IndexedMap.prototype.copy = function () {
+        var copy = new IndexedMap();
+        for (var i = 0; i < this.array.length; i++) {
+            var pair = this.array[i].copy();
             copy.array[i] = pair;
             copy.index[pair.first.id()] = i;
         }
         return copy;
-    }
-}
-
+    };
+    return IndexedMap;
+}());
 /**
  * A class which defines a generic pair object.
  * @private
  */
 // tslint:disable: max-classes-per-file
-class Pair<T, U> {
+var Pair = /** @class */ (function () {
     /**
      * Construct a new Pair object.
      *
      * @param first The first item of the pair.
      * @param second The second item of the pair.
      */
-    constructor(public first: T, public second: U) { }
-
+    function Pair(first, second) {
+        this.first = first;
+        this.second = second;
+    }
     /**
      * Create a copy of the pair.
      */
-    public copy() { return new Pair(this.first, this.second); }
-}
+    Pair.prototype.copy = function () { return new Pair(this.first, this.second); };
+    return Pair;
+}());

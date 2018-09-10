@@ -5,11 +5,8 @@
 |
 | The full license is in the file COPYING.txt, distributed with this software.
 |----------------------------------------------------------------------------*/
-
 import { Expression } from "./expression";
 import { Strength } from "./strength";
-import { Variable } from "./variable";
-
 /**
  * An enum defining the linear constraint operators.
  *
@@ -21,13 +18,12 @@ import { Variable } from "./variable";
  *
  * @enum {Number}
  */
-export
-enum Operator {
-    Le,  // <=
-    Ge,  // >=
-    Eq,   // ==
-}
-
+export var Operator;
+(function (Operator) {
+    Operator[Operator["Le"] = 0] = "Le";
+    Operator[Operator["Ge"] = 1] = "Ge";
+    Operator[Operator["Eq"] = 2] = "Eq";
+})(Operator || (Operator = {}));
 /**
  * A linear constraint equation.
  *
@@ -40,77 +36,65 @@ enum Operator {
  * @param {Expression} [rhs] Right hand side of the expression.
  * @param {Number} [strength=Strength.required] The strength of the constraint.
  */
-export
-class Constraint {
-    constructor(
-        expression: Expression|Variable,
-        operator: Operator,
-        rhs?: Expression|Variable|number,
-        strength: number = Strength.required) {
+var Constraint = /** @class */ (function () {
+    function Constraint(expression, operator, rhs, strength) {
+        if (strength === void 0) { strength = Strength.required; }
+        this._id = CnId++;
         this._operator = operator;
         this._strength = Strength.clip(strength);
         if ((rhs === undefined) && (expression instanceof Expression)) {
             this._expression = expression;
-        } else {
+        }
+        else {
             this._expression = expression.minus(rhs);
         }
     }
-
     /**
      * A static constraint comparison function.
      * @private
      */
-    public static Compare( a: Constraint, b: Constraint ): number {
+    Constraint.Compare = function (a, b) {
         return a.id() - b.id();
-    }
-
+    };
     /**
      * Returns the unique id number of the constraint.
      * @private
      */
-    public id(): number {
+    Constraint.prototype.id = function () {
         return this._id;
-    }
-
+    };
     /**
      * Returns the expression of the constraint.
      *
      * @return {Expression} expression
      */
-    public expression(): Expression {
+    Constraint.prototype.expression = function () {
         return this._expression;
-    }
-
+    };
     /**
      * Returns the relational operator of the constraint.
      *
      * @return {Operator} linear constraint operator
      */
-    public op(): Operator {
+    Constraint.prototype.op = function () {
         return this._operator;
-    }
-
+    };
     /**
      * Returns the strength of the constraint.
      *
      * @return {Number} strength
      */
-    public strength(): number {
+    Constraint.prototype.strength = function () {
         return this._strength;
-    }
-
-    public toString(): string {
+    };
+    Constraint.prototype.toString = function () {
         return this._expression.toString() + " " + ["<=", ">=", "="][this._operator] + " 0 (" + this._strength.toString() + ")";
-    }
-
-    private _expression: Expression;
-    private _operator: Operator;
-    private _strength: number;
-    private _id: number = CnId++;
-}
-
+    };
+    return Constraint;
+}());
+export { Constraint };
 /**
  * The internal constraint id counter.
  * @private
  */
-let CnId = 0;
+var CnId = 0;
