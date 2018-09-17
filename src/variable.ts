@@ -21,14 +21,6 @@ class Variable {
     }
 
     /**
-     * A static variable comparison function.
-     * @private
-     */
-    public static Compare( a: Variable, b: Variable ): number {
-        return a.id() - b.id();
-    }
-
-    /**
      * Returns the unique id number of the variable.
      * @private
      */

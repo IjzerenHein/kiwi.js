@@ -773,7 +773,7 @@ interface IRowCreation {
  * @private
  */
 function createCnMap(): IMap<Constraint, ITag> {
-    return createMap<Constraint, ITag>( Constraint.Compare );
+    return createMap<Constraint, ITag>();
 }
 
 /**
@@ -781,7 +781,7 @@ function createCnMap(): IMap<Constraint, ITag> {
  * @private
  */
 function createRowMap(): IMap<Symbol, Row> {
-    return createMap<Symbol, Row>( Symbol.Compare );
+    return createMap<Symbol, Row>();
 }
 
 /**
@@ -789,7 +789,7 @@ function createRowMap(): IMap<Symbol, Row> {
  * @private
  */
 function createVarMap(): IMap<Variable, Symbol> {
-    return createMap<Variable, Symbol>( Variable.Compare );
+    return createMap<Variable, Symbol>();
 }
 
 /**
@@ -797,7 +797,7 @@ function createVarMap(): IMap<Variable, Symbol> {
  * @private
  */
 function createEditMap(): IMap<Variable, IEditInfo> {
-    return createMap<Variable, IEditInfo>( Variable.Compare );
+    return createMap<Variable, IEditInfo>();
 }
 
 /**
@@ -817,13 +817,6 @@ enum SymbolType {
  * @private
  */
 class Symbol {
-    /**
-     * The static Symbol comparison function.
-     */
-    public static Compare( a: Symbol, b: Symbol ): number {
-        return a.id() - b.id();
-    }
-
     /**
      * Construct a new Symbol
      *
@@ -1037,6 +1030,6 @@ class Row {
         }
     }
 
-    private _cellMap = createMap<Symbol, number>( Symbol.Compare );
+    private _cellMap = createMap<Symbol, number>();
     private _constant: number;
 }

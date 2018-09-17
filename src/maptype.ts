@@ -9,7 +9,7 @@
 export interface IMap<T extends { id(): number }, U> extends IndexedMap<T, U> { }
 
 export
-function createMap<T extends { id(): number }, U>( compare: any ): IMap<T, U> {
+function createMap<T extends { id(): number }, U>(): IMap<T, U> {
     return new IndexedMap<T, U>();
 }
 

@@ -13,11 +13,11 @@
     /**
      * Create a new symbolic strength.
      *
-     * @param {Number} a strong
-     * @param {Number} b medium
-     * @param {Number} c weak
-     * @param {Number} [w] weight
-     * @return {Number} strength
+     * @param a strong
+     * @param b medium
+     * @param c weak
+     * @param [w] weight
+     * @return strength
     */
     static create( a: number, b: number, c: number, w: number = 1.0 ) {
         let result: number = 0.0;
