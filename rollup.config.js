@@ -2,7 +2,7 @@ import { uglify } from 'rollup-plugin-uglify';
 
 const license = `
 /*-----------------------------------------------------------------------------
-| Copyright (c) 2014-2018, Nucleic Development Team & H. Rutjes.
+| Copyright (c) 2014-2019, Nucleic Development Team & H. Rutjes.
 |
 | Distributed under the terms of the Modified BSD License.
 |
