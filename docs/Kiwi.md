@@ -58,7 +58,7 @@ assert(centerX.value(), 250);
         * [.strong](#module_kiwi..Strength.strong)
         * [.medium](#module_kiwi..Strength.medium)
         * [.weak](#module_kiwi..Strength.weak)
-        * [.create(a, b, c, [w])](#module_kiwi..Strength.create) ⇒ <code>Number</code>
+        * [.create(a, b, c, [w])](#module_kiwi..Strength.create) ⇒
     * [~Constraint](#module_kiwi..Constraint)
         * [new Constraint(expression, operator, [rhs], [strength])](#new_module_kiwi..Constraint_new)
         * [.expression()](#module_kiwi..Constraint+expression) ⇒ <code>Expression</code>
@@ -268,7 +268,7 @@ Creates a new Expression by dividing with a fixed number.
     * [.strong](#module_kiwi..Strength.strong)
     * [.medium](#module_kiwi..Strength.medium)
     * [.weak](#module_kiwi..Strength.weak)
-    * [.create(a, b, c, [w])](#module_kiwi..Strength.create) ⇒ <code>Number</code>
+    * [.create(a, b, c, [w])](#module_kiwi..Strength.create) ⇒
 
 <a name="module_kiwi..Strength.required"></a>
 
@@ -296,18 +296,18 @@ The 'weak' symbolic strength.
 **Kind**: static property of [<code>Strength</code>](#module_kiwi..Strength)  
 <a name="module_kiwi..Strength.create"></a>
 
-#### Strength.create(a, b, c, [w]) ⇒ <code>Number</code>
+#### Strength.create(a, b, c, [w]) ⇒
 Create a new symbolic strength.
 
 **Kind**: static method of [<code>Strength</code>](#module_kiwi..Strength)  
-**Returns**: <code>Number</code> - strength  
+**Returns**: strength  
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| a | <code>Number</code> |  | strong |
-| b | <code>Number</code> |  | medium |
-| c | <code>Number</code> |  | weak |
-| [w] | <code>Number</code> | <code>1</code> | weight |
+| Param | Default | Description |
+| --- | --- | --- |
+| a |  | strong |
+| b |  | medium |
+| c |  | weak |
+| [w] | <code>1</code> | weight |
 
 <a name="module_kiwi..Constraint"></a>
 
