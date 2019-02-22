@@ -113,7 +113,7 @@ class Expression {
     }
 
     public toString(): string {
-        let result = this._terms.array.map(function(pair, idx) {
+        let result = this._terms.array.map(function(pair) {
             return (pair.second + "*" + pair.first.toString());
         }).join(" + ");
 
@@ -145,7 +145,7 @@ interface IParseResult {
 function parseArgs( args: IArguments ): IParseResult {
     let constant = 0.0;
     let factory = () => 0.0;
-    let terms = createMap<Variable, number>( Variable.Compare );
+    let terms = createMap<Variable, number>();
     for ( let i = 0, n = args.length; i < n; ++i ) {
         let item = args[ i ];
         if ( typeof item === "number" ) {

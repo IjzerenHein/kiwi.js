@@ -57,14 +57,6 @@ class Constraint {
     }
 
     /**
-     * A static constraint comparison function.
-     * @private
-     */
-    public static Compare( a: Constraint, b: Constraint ): number {
-        return a.id() - b.id();
-    }
-
-    /**
      * Returns the unique id number of the constraint.
      * @private
      */
