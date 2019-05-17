@@ -23,7 +23,8 @@ Install using NPM:
 The following example creates a solver which automatically calculates the width:
 
 ```javascript
-import kiwi from 'kiwi.js';
+import * as kiwi from 'kiwi.js';
+import { equal } from 'assert';
 
 // Create a solver
 var solver = new kiwi.Solver();
@@ -42,7 +43,7 @@ solver.addConstraint(new kiwi.Constraint(new kiwi.Expression([-1, right], left, 
 
 // Solve the constraints
 solver.updateVariables();
-assert(right, 500);
+equal(right.value(), 500);
 ```
 
 ## Documentation
