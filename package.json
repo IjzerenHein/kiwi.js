@@ -34,14 +34,14 @@
     "benchmark": "^2.1.4",
     "cassowary": "0.0.2",
     "chai": "^4.2.0",
-    "codecov": "^3.2.0",
+    "codecov": "^3.5.0",
     "istanbul": "^0.4.5",
-    "jsdoc-to-markdown": "^4.0.1",
-    "mocha": "^6.0.1",
-    "rollup": "^1.2.2",
+    "jsdoc-to-markdown": "^5.0.0",
+    "mocha": "^6.1.4",
+    "rollup": "^1.12.2",
     "rollup-plugin-uglify": "^6.0.2",
-    "tslint": "^5.12.1",
-    "typescript": "^3.3.3333"
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
   },
   "scripts": {
     "build": "tsc && tsc -t es6 --outDir tmp/es && rollup -c",
