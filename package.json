@@ -38,7 +38,7 @@
     "istanbul": "^0.4.5",
     "jsdoc-to-markdown": "^5.0.0",
     "mocha": "^6.2.0",
-    "rollup": "^1.12.2",
+    "rollup": "^1.17.0",
     "rollup-plugin-uglify": "^6.0.2",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
