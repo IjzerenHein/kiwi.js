@@ -1,3 +1,7 @@
+# THIS REPOSITORY IS NO LONGER MAINTAINED
+
+If you are interested in maintaining this repository (and taking ownership of it), please reach out to me [here](mailto:hrutjes@gmail.com).
+
 # kiwi.js
 
 [![view on npm](http://img.shields.io/npm/v/kiwi.js.svg)](https://www.npmjs.org/package/kiwi.js)
@@ -9,10 +13,14 @@ Originally created by Chris Colbert, it was redesigned from the ground up to be 
 
 
 ## Index
-- [Getting started](#getting-started)
-- [Documentation](#documentation)
-- [Benchmarks](#benchmarks)
-- [Tests](#tests)
+- [THIS REPOSITORY IS NO LONGER MAINTAINED](#this-repository-is-no-longer-maintained)
+- [kiwi.js](#kiwijs)
+	- [Index](#index)
+	- [Getting started](#getting-started)
+	- [Documentation](#documentation)
+	- [Benchmarks](#benchmarks)
+	- [Tests](#tests)
+	- [Contribute](#contribute)
 
 ## Getting started
 
