@@ -1,5 +1,7 @@
 # THIS REPOSITORY IS NO LONGER MAINTAINED
 
+Looking for an alternative? Please have a look at [lume/kiwi](https://github.com/lume/kiwi).
+
 If you are interested in maintaining this repository (and taking ownership of it), please reach out to me [here](mailto:hrutjes@gmail.com).
 
 # kiwi.js
